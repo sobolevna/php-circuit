@@ -17,15 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Circuit\Simple\Structure; 
-
-use Circuit\Interfaces\Structure\Container as ContainerInterface;
+namespace Circuit\Simple;
 
 /**
- * Description of Container
+ * Description of Exception
  *
  * @author sobolevna
  */
-class Container {
+class Exception extends \Exception{
     //put your code here
 }

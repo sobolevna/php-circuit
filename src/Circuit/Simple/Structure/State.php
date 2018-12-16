@@ -17,8 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Circuit\Framework\Structure;
+namespace Circuit\Simple\Structure;
 
+use Circuit\Simple\Structure;
 use Circuit\Interfaces\Structure\State as StateInterface;
 
 /**
@@ -26,6 +27,20 @@ use Circuit\Interfaces\Structure\State as StateInterface;
  *
  * @author sobolevna
  */
-class State implements StateInterface{
-    //put your code here
+class State extends Structure{
+    
+    protected $value;
+
+    public function __construct($value = null, $id = '') {
+        $this->id = $id;
+        $this->value =  $value;               
+    }
+    
+    public function getValue() {
+        return $this->value;
+    }
+    
+    public function getState() {
+        return $this;
+    }
 }

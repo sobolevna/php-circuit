@@ -17,13 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Circuit\Framework\Structure;
+namespace Circuit\Simple\Structure;
 
 use Circuit\Interfaces\Structure;
 use Circuit\Interfaces\Structure\Element\{Node, EntryPoint, EmptyField};
-use Circuit\Framework\Structure\Element\Node as FrameworkNode;
-use Circuit\Framework\Structure\Element\EntryPoint as FrameworkEntryPoint;
-use Circuit\Framework\Structure\Element\EmptyField as FrameworkEmptyField;
+use Circuit\Simple\Structure\Element\Node as SimpleNode;
+use Circuit\Simple\Structure\Element\EntryPoint as SimpleEntryPoint;
+use Circuit\Simple\Structure\Element\EmptyField as SimpleEmptyField;
 
 /**
  * Description of Builder
@@ -49,7 +49,7 @@ class Builder {
             }
         }
         elseif (!$class) {
-            return new FrameworkNode();
+            return new SimpleNode();
         }
     }
     
@@ -61,7 +61,7 @@ class Builder {
             }
         }
         elseif (!$class) {
-            return new FrameworkEntryPoint();
+            return new SimpleEntryPoint();
         }
     }
     
@@ -73,7 +73,7 @@ class Builder {
             }
         }
         elseif (!$class) {
-            return new FrameworkEmptyField();
+            return new SimpleEmptyField();
         }
     }
 }

@@ -17,18 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Circuit\Framework\Structure;
+namespace Circuit\Simple\Structure;
 
-use \Circuit\Framework\Structure;
+use \Circuit\Simple\Structure;
 use Circuit\Interfaces\Structure\Element as ElementInterface;
-use Circuit\Framework\Structure\Element\{Node, EmptyField, EntryPoint};
+use Circuit\Simple\Structure\Element\{Node, EmptyField, EntryPoint};
 
 /**
  * Description of Element
  *
  * @author sobolevna
  */
-class Element extends Structure implements ElementInterface{
+class Element extends Structure {
     
     /**
      *
@@ -53,7 +53,7 @@ class Element extends Structure implements ElementInterface{
      * True empty fields (without all their internal entry points with structures) 
      * can't be converted. 
      * Entry points are not to have external connections.
-     * @return \Circuit\Framework\Structure\Element\Node
+     * @return \Circuit\Simple\Structure\Element\Node
      */
     public function toNode() {
         if ($this instanceof Node) {

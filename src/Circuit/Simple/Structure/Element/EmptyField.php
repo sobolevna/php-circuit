@@ -17,10 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Circuit\Framework\Structure\Element;
+namespace Circuit\Simple\Structure\Element;
 
-use Circuit\Framework\{Structure, Exception};
-use Circuit\Framework\Structure\{Element, State};
+use Circuit\Simple\{Structure, Exception};
+use Circuit\Simple\Structure\{Element, State};
 use Circuit\Interfaces\Structure\Element\EmptyField as EmptyFieldInterface;
 
 /**
@@ -28,7 +28,7 @@ use Circuit\Interfaces\Structure\Element\EmptyField as EmptyFieldInterface;
  *
  * @author sobolevna
  */
-class EmptyField extends Element implements EmptyFieldInterface{
+class EmptyField extends Element {
     
     /**
      *

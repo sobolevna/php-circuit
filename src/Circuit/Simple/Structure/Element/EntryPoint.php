@@ -17,19 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Circuit\Framework\Structure\Element;
+namespace Circuit\Simple\Structure\Element;
 
-use Circuit\Framework\Exception;
-use Circuit\Framework\Structure\{Connection, Element};
-use Circuit\Interfaces\Structure\Connection as ConnectionInterface;
-use Circuit\Interfaces\Structure\Element\EntryPoint as EntryPointInterface;
+use Circuit\Simple\Exception;
+use Circuit\Simple\Structure\{Connection, Element};
 
 /**
  * Description of EntryPoint
  *
  * @author sobolevna
  */
-class EntryPoint extends Element implements EntryPointInterface{
+class EntryPoint extends Element {
     
     /**
      *
@@ -65,5 +63,13 @@ class EntryPoint extends Element implements EntryPointInterface{
         ;
     }
     
-    
+    public function connect(\Circuit\Simple\Structure $connectWith, array $connectionMap = null, $id = '') {
+        if ($connectWith instanceof Element\EntryPoint) {
+            return $this->connectExternal($connectWith, $this->connectionInterface, $id);
+        }
+        elseif ($connectWith instanceof Element\EmptyField) {
+            return $this->connectInternal($connectWith, $this->connectionInterface, $id);
+        }
+        throw new Exception('Entry point must be connected euther to another entry point or a node');
+    }
 }

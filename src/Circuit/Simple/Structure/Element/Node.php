@@ -17,15 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Circuit\Framework\Structure\Element;
+namespace Circuit\Simple\Structure\Element;
 
-use Circuit\Interfaces\Structure\Element\Node as NodeInterface;
+use Circuit\Simple\Structure\Element;
 
 /**
  * Description of newPHPClass
  *
  * @author sobolevna
  */
-class Node implements NodeInterface{
+class Node extends Element {
     //put your code here
 }

@@ -19,18 +19,16 @@
 
 namespace Circuit\Simple;
 
-use Circuit\Interfaces; 
-use Circuit\Simple\Structure\{Builder,State,Element};
-use Circuit\Simple\Structure\Element\{Node, EmptyField, EntryPoint, MockEntryPoint};
-
-use Circuit\Interfaces\Structure as StructureInterface;
+use Circuit\Simple\Exception;
+use Circuit\Simple\Structure\{Builder,State,Element, Connection};
+use Circuit\Simple\Structure\Element\{Node, EmptyField, EntryPoint};
 
 /**
  * Description of Structure
  *
  * @author sobolevna
  */
-class Structure implements StructureInterface {
+class Structure {
     
     
     protected $id;
@@ -70,6 +68,12 @@ class Structure implements StructureInterface {
      * @var Node[]
      */
     protected $nodes = array();
+    
+    /**
+     *
+     * @var Connection[]
+     */
+    protected $connections = [];
 
     public function __construct($id = '', array $map = null) {
         $this->id = $id;
@@ -83,7 +87,7 @@ class Structure implements StructureInterface {
     protected function buildBuilder() {
         if (!$this->builder || !($this->builder instanceof Builder)) {
             $this->builder = new Builder();
-        }
+        } 
     } 
     
     /**
@@ -132,7 +136,7 @@ class Structure implements StructureInterface {
                 }
             }
             return true;
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             echo $ex->getMessage();
             return false;
         }
@@ -147,10 +151,11 @@ class Structure implements StructureInterface {
         return $this->state;
     }
     
-    public function connect(Structure $connectWith, array $connectionMap = null, $id) : Connection {
+    public function connect(Structure $connectWith, array $connectionMap = null, $id = '') {
         try {
-            return new Connection($this, &$connectWith, $connectionMap);
+            return new Connection($id, $this, $connectWith, $connectionMap);
         } catch (Exception $ex) {
+            echo $ex->getMessage();
             return null;
         }
     }
@@ -158,5 +163,21 @@ class Structure implements StructureInterface {
     public function info() {
         return ['id'=> $this->id];
     }    
+    
+    public function append(&$element, $id = '') {
+        $elementId = $id ? $id : $element->info()['id'];
+        if ($element instanceof EmptyField) {
+            $this->emptyFields[$elementId] = $element;
+        } 
+        elseif ($element instanceof EntryPoint) {
+            $this->entryPoints[$elementId] = $element;
+        }
+        elseif ($element instanceof Node) {
+            $this->nodes[$elementId] = $element;
+        }
+        else {
+            throw new Exception('You can append to a structure onle specified elements -- Nodes, Entry points or Empty Fields');
+        }
+    }
     
 }

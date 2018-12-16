@@ -7,5 +7,11 @@
             "email": "your@email.here"
         }
     ],
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Circuit\\Simple\\": "src/Circuit/Simple",
+            "Circuit\\Interfaces\\": "src/Circuit/Interfaces"
+        }
+    }
 }
