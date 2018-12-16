@@ -1,0 +1,11 @@
+{
+    "name": "vendor/circuit",
+    "description": "  circuit.",
+    "authors": [
+        {
+            "name": "sobolevna",
+            "email": "your@email.here"
+        }
+    ],
+    "require": {}
+}
