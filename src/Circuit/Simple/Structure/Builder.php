@@ -19,11 +19,7 @@
 
 namespace Circuit\Simple\Structure;
 
-use Circuit\Interfaces\Structure;
-use Circuit\Interfaces\Structure\Element\{Node, EntryPoint, EmptyField};
-use Circuit\Simple\Structure\Element\Node as SimpleNode;
-use Circuit\Simple\Structure\Element\EntryPoint as SimpleEntryPoint;
-use Circuit\Simple\Structure\Element\EmptyField as SimpleEmptyField;
+use Circuit\Simple\Structure\Element\{Node, EntryPoint, EmptyField};
 
 /**
  * Description of Builder
@@ -75,5 +71,9 @@ class Builder {
         elseif (!$class) {
             return new SimpleEmptyField();
         }
+    }
+    
+    public function buildConnection(&$structure1, &$structure2, array $connectionMap = null, $id = '') {
+        return new Connection($id, $structure1, $structure2);
     }
 }

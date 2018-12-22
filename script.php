@@ -1,10 +1,15 @@
 <?php
 require './vendor/autoload.php';
-$structure = new \Circuit\Simple\Structure();
-$node = new \Circuit\Simple\Structure\Element\Node();
-$entryPoint = new \Circuit\Simple\Structure\Element\EntryPoint();
-$emptyField = new \Circuit\Simple\Structure\Element\EmptyField();
+$node = new \Circuit\Simple\Structure\Element\Node('n1');
+$entryPoint = new \Circuit\Simple\Structure\Element\EntryPoint('ep1');
+$emptyField = new \Circuit\Simple\Structure\Element\EmptyField('ef1');
 
 $node->connect($entryPoint);
 
-$structure->append($node);
+$emptyField->connect($node);
+
+$map = $emptyField->formStructure();
+
+$structure = new \Circuit\Simple\Structure('s1', $map);
+
+var_dump($structure);

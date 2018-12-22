@@ -46,7 +46,7 @@ class EntryPoint extends Element {
         $this->connectionInterface = $connectionInterface;
     }
     
-    public function connectExternal(Element\EntryPoint &$target, string $connectionInterface = Connection::class, $id = '') {
+    public function connectExternal(&$target, string $connectionInterface = Connection::class, $id = '') {
         if ($this->isElementary()) {
             $class = $this->connectionInterface;
             return new $class($id, $this, $target);
@@ -59,11 +59,11 @@ class EntryPoint extends Element {
         ;
     }
     
-    public function sendResponse(\Circuit\Interfaces\Structure\State $state) {
+    public function sendResponse($state) {
         ;
     }
     
-    public function connect(\Circuit\Simple\Structure $connectWith, array $connectionMap = null, $id = '') {
+    public function connect( $connectWith, array $connectionMap = null, $id = '') {
         if ($connectWith instanceof Element\EntryPoint) {
             return $this->connectExternal($connectWith, $this->connectionInterface, $id);
         }

@@ -21,7 +21,6 @@ namespace Circuit\Simple\Structure\Element;
 
 use Circuit\Simple\{Structure, Exception};
 use Circuit\Simple\Structure\{Element, State};
-use Circuit\Interfaces\Structure\Element\EmptyField as EmptyFieldInterface;
 
 /**
  * Description of EmptyField
@@ -34,9 +33,9 @@ class EmptyField extends Element {
      *
      * @var Structure[] 
      */
-    protected $entries = [];
+    protected $contents = [];
     
-    public function fill(Structure &$structure, array $structureEntryPoints = null, array $fieldEntryPoints = null, array $connectionInterfaceMap = null) {
+    public function fill(&$structure, array $structureEntryPoints = null, array $fieldEntryPoints = null, array $connectionInterfaceMap = null) {
         try {
             $sourceEP = empty($fieldEntryPoints) ? $this->internalEntryPoints() : $fieldEntryPoints;
             $targetEP = empty($structureEntryPoints) ? $structure->entryPoints() : $structureEntryPoints; 
@@ -55,13 +54,13 @@ class EmptyField extends Element {
         }
     }
     
-    protected function addEntry(Structure &$structure) {
+    protected function addContent(&$structure) {
         $id = $structure->info()['id'];
         if (!empty($id)) {
-            $this->entries[$id] = $structure;
+            $this->contents[$id] = $structure;
         }
         else {
-            $this->entries[] = $structure;
+            $this->contents[] = $structure;
         }
     }
     
@@ -70,12 +69,12 @@ class EmptyField extends Element {
      * @return State
      */
     public function getState() {
-        $isEmpty = count($this->entries) == 0;
-        $isFull = count($this->entries) == count($this->internalEntryPoints);
-        if(count($this->entries) == 0) {
+        $isEmpty = count($this->contents) == 0;
+        $isFull = count($this->contents) == count($this->internalEntryPoints);
+        if(count($this->contents) == 0) {
             $fillness = -1;
         }
-        elseif (count($this->entries) == count($this->internalEntryPoints)) {
+        elseif (count($this->contents) == count($this->internalEntryPoints)) {
             $fillness = 1;
         }
         else {

@@ -30,10 +30,36 @@ use Circuit\Interfaces\Structure\State as StateInterface;
 class State extends Structure{
     
     protected $value;
+    
+    /**
+     *
+     * @var Structure 
+     */
+    protected $instance;
 
-    public function __construct($value = null, $id = '') {
-        $this->id = $id;
-        $this->value =  $value;               
+    public function __construct($value = null, $id = '', $instance = null) {
+        $this->id = $this->setId($id);
+        $this->value = $value;
+        $this->instance = $instance instanceof Structure ? $instance : null;
+    }
+    
+        
+    /**
+     * 
+     * @param mixed $id
+     * @return string
+     * @throws Exception
+     */
+    protected function setId($id) {
+        if (is_string($id) || is_numeric($id)) {
+            return $id;
+        }
+        elseif (!$id) {
+            return self::class.'_'.time();
+        }
+        else {
+            throw new Exception('Invalid id');
+        }
     }
     
     public function getValue() {
@@ -42,5 +68,15 @@ class State extends Structure{
     
     public function getState() {
         return $this;
+    }
+    
+    public function toMap($toJson = false) {
+        $map = [
+            'id' => $this->id,
+            'value' => $this->value,
+            'instance' => self::class,
+            'map' => $this->instance ? $this->instance->toMap(false) : ''
+        ];
+        return $toJson ? json_encode($map) : $map;
     }
 }

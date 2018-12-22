@@ -19,8 +19,7 @@
 
 namespace Circuit\Simple\Structure;
 
-use \Circuit\Simple\Structure;
-use Circuit\Interfaces\Structure\Element as ElementInterface;
+use \Circuit\Simple\{Structure, Exception};
 use Circuit\Simple\Structure\Element\{Node, EmptyField, EntryPoint};
 
 /**
@@ -34,16 +33,16 @@ class Element extends Structure {
      *
      * @var Structure 
      */
-    protected $instance;
+    protected $instance = null;
     
     public function __construct($instance = null, array $map = null) {
-        if (!($instance instanceof Structure)) {
-            parent::__construct($instance, $map);
-            $this->instance = $this;            
+        if (!$instance || !($instance instanceof Structure)) {
+            parent::__construct($instance, $map);     
         }
         else {
-            $this->instance = $instance;     
-            $this->builder = $instance->builder();       
+            $this->instance = &$instance;     
+            $this->builder = &$instance->builder(); 
+            $this->state = &$instance->getState(); 
         }   
     }
     
@@ -56,20 +55,35 @@ class Element extends Structure {
      * @return \Circuit\Simple\Structure\Element\Node
      */
     public function toNode() {
-        if ($this instanceof Node) {
+        if (get_class($this) == Element::class) {
+            return new Node($this);
+        }
+        elseif ($this instanceof Node) {
             return $this;
         }
-        elseif ($this instanceof EmptyField) {
-            
+        elseif ($this instanceof EmptyField && $this->isEmpty()) {
+            return new Node($this);
         }
-        elseif ($this instanceof EntryPoint) {
-            
+        elseif ($this instanceof EntryPoint && !$this->hasExternalConnection()) {
+            return new Node($this);
         }
-        return new Node($this);
+        throw new Exception('Invalid class to convert to Node');
     }
     
     public function toEntryPoint() {
-        ;
+        if (get_class($this) == Element::class) {
+            return new EntryPoint($this);
+        }
+        elseif ($this instanceof EntryPoint ) {
+            return $this;
+        }
+        elseif ($this instanceof Node) {
+            return new EntryPoint($this);
+        }
+        elseif ($this instanceof EmptyField && $this->isEmpty()) {
+            return new Node($this);
+        }
+        throw new Exception('Invalid class to convert to EntryPoint');
     }
     
     public function toEmptyField() {
@@ -95,5 +109,36 @@ class Element extends Structure {
             $pointCount += 1;
         }
         return !($nodeCount || $fieldCount || $pointCount);
+    } 
+    
+    public function formStructure($justMap = true, $useExternal = false, $useEmptyFields = false, $from = []) {
+        $from[] = $this->id;
+        $map = [
+            'elements' => [
+                'nodes' => [],
+                'emptyFields' => [],
+                'entryPoints' => []
+            ], 
+            'connections' => []
+        ];
+        if ($this instanceof Node) {
+            $map['elements']['nodes'][] = $this->toMap();
+        }
+        elseif ($this instanceof EmptyField) {
+            $map['elements']['emptyFields'][] = $this->toMap();
+        }
+        elseif ($this instanceof EntryPoint) {
+            $map['elements']['entryPoints'][] = $this->toMap();
+        }
+        foreach ($this->connections as $conn) {
+            $map['connections'][] = $conn->toMap();
+            $element = $conn->getThrough($this->id);
+            if (!$element || in_array($element->info()['id'], $from)) {
+                continue;
+            }
+            $elementMap = $element->formStructure($justMap, $useExternal, $useEmptyFields, $from);
+            $map = array_merge_recursive($map, $elementMap);
+        }
+        return $justMap || count($from)> 0 ? $map : new Structure('', $map);
     }
 }

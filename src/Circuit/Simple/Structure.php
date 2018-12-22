@@ -76,13 +76,31 @@ class Structure {
     protected $connections = [];
 
     public function __construct($id = '', array $map = null) {
-        $this->id = $id;
+        $this->id = $this->setId($id);
         $this->buildBuilder();
         if (!empty($map)) {
             $this->fromMap($map);
         }
         $this->state = new State();
     } 
+    
+    /**
+     * 
+     * @param mixed $id
+     * @return string
+     * @throws Exception
+     */
+    protected function setId($id) {
+        if (is_string($id) || is_numeric($id)) {
+            return $id;
+        }
+        elseif (!$id) {
+            return get_class($this).'_'.microtime();
+        }
+        else {
+            throw new Exception('Invalid id');
+        }
+    }
     
     protected function buildBuilder() {
         if (!$this->builder || !($this->builder instanceof Builder)) {
@@ -94,19 +112,52 @@ class Structure {
      * 
      * @return Builder
      */
-    public function builder() : Builder {
+    public function builder() {
         return $this->builder;
     }
     
-    protected function fromMap(array $map) {
-        
+    /**
+     * 
+     * @param mixed $map
+     * @return Structure
+     */
+    protected function fromMap($map) {
+        return $this->builder->fromMap($map);
     } 
+    
+    /**
+     * Recursively converts a structure to a map
+     * @param bool $toJson
+     * @return array|string
+     */
+    public function toMap($toJson = false) {
+        $map = [
+            'id' => $this->id,
+            'elements' => [
+                'nodes' => [],
+                'emptyFields' => [],
+                'entryPoints' => []
+            ], 
+            'connections' => [],
+            'state' =>$this->state->toMap(),
+            'instance' => get_class($this)
+        ];
+        foreach (['nodes', 'emptyFields', 'entryPoints'] as $type) {
+            foreach ($this->$type as $key=>$value) {
+                $map['elements'][$type][$key] = $value->toMap();
+            }
+        }
+        foreach ($this->connections as $key=>$value) {
+            $map['connections'][$key] = $value->toMap();
+        }
+        return $toJson ? json_encode($map) : $map;
+    }
     
     public function process(State $state = null) {
         return new State(['oldValue' => $state->value(), 'newValue'=> date()]);
     }
     
-    public function element() : Element {
+    public function element() {
         if($this instanceof Element) {
             return $this;
         }
@@ -124,7 +175,7 @@ class Structure {
      * @param array $connectionInterfaceMap 
      * @return bool
      */
-    public function insertTo(EmptyField $emptyField, array $sourceEntryPoints = null, array $targetEntryPoints = null, array $connectionInterfaceMap = null) {
+    public function insertTo($emptyField, array $sourceEntryPoints = null, array $targetEntryPoints = null, array $connectionInterfaceMap = null) {
         try {
             $sourceEP = empty($sourceEntryPoints) ? $this->entryPoints() : $sourceEntryPoints;
             $targetEP = empty($targetEntryPoints) ? $emptyField->internalEntryPoints() : $targetEntryPoints; 
@@ -147,37 +198,82 @@ class Structure {
         return $this->entryPoints;
     }
     
+    /**
+     * 
+     * @return State
+     */
     public function getState() {
         return $this->state;
     }
     
-    public function connect(Structure $connectWith, array $connectionMap = null, $id = '') {
-        try {
-            return new Connection($id, $this, $connectWith, $connectionMap);
-        } catch (Exception $ex) {
-            echo $ex->getMessage();
-            return null;
-        }
+    public function connect($connectWith, array $connectionMap = null, $id = '') {
+        return $this->builder->buildConnection($this, $connectWith, $connectionMap, $id);
     }
     
     public function info() {
         return ['id'=> $this->id];
     }    
     
+    /**
+     * Addends element to the structure 
+     * @todo How do we append it with its all connections?
+     * @param EmptyField|EntryPoint|Node $element
+     * @param string $id
+     * @throws Exception
+     */
     public function append(&$element, $id = '') {
         $elementId = $id ? $id : $element->info()['id'];
         if ($element instanceof EmptyField) {
-            $this->emptyFields[$elementId] = $element;
+            $this->emptyFields[$elementId] = &$element;
         } 
         elseif ($element instanceof EntryPoint) {
-            $this->entryPoints[$elementId] = $element;
+            $this->entryPoints[$elementId] = &$element;
         }
         elseif ($element instanceof Node) {
-            $this->nodes[$elementId] = $element;
+            $this->nodes[$elementId] = &$element;
         }
         else {
             throw new Exception('You can append to a structure onle specified elements -- Nodes, Entry points or Empty Fields');
         }
     }
     
+    /**
+     * 
+     * @param Connection $connection
+     * @return boolean
+     * @throws Exception
+     */
+    public function bindConnection(&$connection) {
+        $id = $connection->info()['id'];        
+        if (!empty($this->connections[$id])) {
+            throw new Exception('This connection already exists.');
+        }
+        elseif (!$connection->hasConnected($this->id)) {
+            throw new Exception("This object doesn't exist in the connection.");
+        }
+        $this->connections[$id] = &$connection;
+        return true;
+    }
+    
+    /**
+     * Get element of the structure by its ID. 
+     * Doesn't work with EmptyFeild content.
+     * @param type $id
+     * @return type
+     */
+    public function getElementById($id) {
+        if (!empty($this->nodes[$id])) {
+            return $this->nodes[$id];
+        }
+        if (!empty($this->emptyFields[$id])) {
+            return $this->emptyFields[$id];
+        }
+        if (!empty($this->entryPoints[$id])) {
+            return $this->entryPoints[$id];
+        }
+        if (!empty($this->connections[$id])) {
+            return $this->connections[$id];
+        }        
+    }
+        
 }
