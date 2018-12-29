@@ -20,7 +20,6 @@
 namespace Circuit\Simple\Structure;
 
 use Circuit\Simple\Structure;
-use Circuit\Interfaces\Structure\State as StateInterface;
 
 /**
  * Description of State
@@ -73,7 +72,7 @@ class State extends Structure{
     public function toMap($toJson = false) {
         $map = [
             'id' => $this->id,
-            'value' => $this->value,
+            'value' => \serialize($this->value),
             'instance' => self::class,
             'map' => $this->instance ? $this->instance->toMap(false) : ''
         ];

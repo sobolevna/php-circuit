@@ -19,13 +19,12 @@
 
 namespace Circuit\Simple\Structure; 
 
-use Circuit\Interfaces\Structure\Container as ContainerInterface;
-
+use Circuit\Simple\Structure; 
 /**
  * Description of Container
  *
  * @author sobolevna
  */
-class Container {
+class Container extends Structure{
     //put your code here
 }

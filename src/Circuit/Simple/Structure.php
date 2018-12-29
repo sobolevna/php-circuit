@@ -19,7 +19,7 @@
 
 namespace Circuit\Simple;
 
-use Circuit\Simple\Exception;
+use Circuit\Simple\Structure\Exception;
 use Circuit\Simple\Structure\{Builder,State,Element, Connection};
 use Circuit\Simple\Structure\Element\{Node, EmptyField, EntryPoint};
 
@@ -118,11 +118,31 @@ class Structure {
     
     /**
      * 
-     * @param mixed $map
+     * @param mixed $structureMap
      * @return Structure
      */
-    protected function fromMap($map) {
-        return $this->builder->fromMap($map);
+    protected function fromMap($structureMap) {
+        $map = $this->builder->checkAndGetStructureMap($structureMap);  
+        $types = ['node', 'emptyField', 'entryPoint'];
+        foreach ($types as $type) {
+            $array = $type.'s';
+            if (!$map['elements'][$array]) {
+                continue;
+            }
+            foreach ($map['elements'][$array] as $elementMap) {
+                $el =  $this->builder->fromMap($elementMap, $type); 
+                $this->{$array}[$el->info()['id']] = &$el;
+            }
+        }
+        foreach ($map['connections'] as $conn) {
+            $structure1 = $this->getElementById($conn['connected'][0]);
+            $structure2 = $this->getElementById($conn['connected'][1]);
+            if (!$structure1 || !$structure2) {
+                throw new Exception('Both connected elements must exist in the structure map');
+            }
+            $this->connections[$conn['id']] = $this->builder->connection($structure1, $structure2, !empty($conn['map']) ? $conn['map'] : null, $conn['id']);
+        }
+        
     } 
     
     /**
@@ -153,7 +173,7 @@ class Structure {
         return $toJson ? json_encode($map) : $map;
     }
     
-    public function process(State $state = null) {
+    public function process($state = null) {
         return new State(['oldValue' => $state->value(), 'newValue'=> date()]);
     }
     
@@ -207,7 +227,7 @@ class Structure {
     }
     
     public function connect($connectWith, array $connectionMap = null, $id = '') {
-        return $this->builder->buildConnection($this, $connectWith, $connectionMap, $id);
+        return $this->builder->connection($this, $connectWith, $connectionMap, $id);
     }
     
     public function info() {

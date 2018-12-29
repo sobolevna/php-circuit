@@ -10,6 +10,8 @@ $emptyField->connect($node);
 
 $map = $emptyField->formStructure();
 
+var_dump($map['connections']);
+
 $structure = new \Circuit\Simple\Structure('s1', $map);
 
 var_dump($structure);

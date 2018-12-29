@@ -19,7 +19,8 @@
 
 namespace Circuit\Simple\Structure;
 
-use Circuit\Simple\{Exception, Structure};
+use Circuit\Simple\Structure;
+use Circuit\Simple\Structure\Exception\Connection as Exception;
 use Circuit\Simple\Structure\Element\EntryPoint;
 
 
@@ -152,11 +153,7 @@ class Connection extends Structure {
      */
     public function toMap($toJson = false) {
         $map = parent::toMap(false);
-        $connected = [];
-        foreach ($this->connected as $key => $value) {
-            $connected[$key] = get_class($value);
-        }
-        $map['connected'] = $connected;
+        $map['connected'] = \array_keys($this->connected);
         return $toJson ? json_encode($map) : $map;
     }
 }

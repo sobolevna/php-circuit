@@ -14,7 +14,7 @@ return [
                 'id' => '',
                 'instance' => '', 
                 'map' => '',
-                'value' => ''
+                'contents' => ''
             ]
         ],
         'entryPoints' => [            

@@ -19,7 +19,8 @@
 
 namespace Circuit\Simple\Structure;
 
-use \Circuit\Simple\{Structure, Exception};
+use Circuit\Simple\Structure;
+use Circuit\Simple\Structure\Exception\Element as Exception;
 use Circuit\Simple\Structure\Element\{Node, EmptyField, EntryPoint};
 
 /**
@@ -44,6 +45,13 @@ class Element extends Structure {
             $this->builder = &$instance->builder(); 
             $this->state = &$instance->getState(); 
         }   
+    }
+    
+    public function process($state = null) {
+        if ($this->instance) {
+            return $this->instance->process($state);
+        }
+        return parent::process($state);
     }
     
     /**
@@ -130,12 +138,12 @@ class Element extends Structure {
         elseif ($this instanceof EntryPoint) {
             $map['elements']['entryPoints'][] = $this->toMap();
         }
-        foreach ($this->connections as $conn) {
-            $map['connections'][] = $conn->toMap();
+        foreach ($this->connections as $conn) {            
             $element = $conn->getThrough($this->id);
             if (!$element || in_array($element->info()['id'], $from)) {
                 continue;
             }
+            $map['connections'][] = $conn->toMap();
             $elementMap = $element->formStructure($justMap, $useExternal, $useEmptyFields, $from);
             $map = array_merge_recursive($map, $elementMap);
         }
