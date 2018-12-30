@@ -82,5 +82,16 @@ class EmptyField extends Element {
         }
         $this->state->fillness = $fillness;
         return parent::getState();
+    } 
+    
+    
+    public function process($state = null, $from = '', $path = []) {
+        if (!empty($this->contents)) {
+            $currentState = $this->contents->process($state);
+        }
+        else {
+            $currentState = $state;
+        }
+        return parent::process($currentState, $from, $path);
     }
 }

@@ -59,10 +59,6 @@ class EntryPoint extends Element {
         ;
     }
     
-    public function sendResponse($state) {
-        ;
-    }
-    
     public function connect( $connectWith, array $connectionMap = null, $id = '') {
         if ($connectWith instanceof Element\EntryPoint) {
             return $this->connectExternal($connectWith, $this->connectionInterface, $id);

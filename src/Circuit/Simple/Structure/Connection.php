@@ -45,7 +45,7 @@ class Connection extends Structure {
 
     public function __construct($id, &$structure1, &$structure2) {
         if ($this->checkConnectionTypes($structure1,$structure2)) {
-            $connectionId = !$id ? $structure1->info()['id'].'-<|>-'.$structure2->info()['id'] : $id;
+            $connectionId = !$id ? [$structure1->info()['id'], $structure2->info()['id']] : $id;
             $this->connected[$structure1->info()['id']] = &$structure1;
             $this->connected[$structure2->info()['id']] = &$structure2;
             if ($structure1->element() instanceof EntryPoint && $structure1->element()->isElementary() && $structure2->element() instanceof EntryPoint && $structure2->element()->isElementary()) {
@@ -58,6 +58,17 @@ class Connection extends Structure {
         else {
             throw new Exception('Invalid types for connection.');
         }
+    }
+    
+    protected function setId($id) {
+        if (!is_array($id)) {
+            return parent::setId($id);
+        }
+        sort($id);
+        if ($id[0] == $id[1]) {
+            throw new Exception('You cannot connect elements with the same ID');
+        }
+        return $id[0].'-<|>-'.$id[1];
     }
     
     public function info() {

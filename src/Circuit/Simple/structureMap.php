@@ -26,12 +26,17 @@ return [
         ]
     ], 
     'connections' => [
-        [
-            'id' => '',
-            'instance' => '', 
-            'connected' => [],
-            'map' => '' 
-        ]
+        'inner' => [
+            [
+                'id' => '',
+                'instance' => '', 
+                'connected' => [],
+                'map' => '' 
+            ]
+        ],
+        'inter' => [
+            
+        ]        
     ],
     'state' => [
         'id' => '',

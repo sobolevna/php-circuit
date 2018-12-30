@@ -59,7 +59,7 @@ class Builder {
         throw new Exception('Invalid settings for building an empty field');
     }
     
-    public function connection(&$structure1, &$structure2, array $connectionMap = null, $id = '') {
+    public function connection($structure1, $structure2, array $connectionMap = null, $id = '') {
         return new Connection($id, $structure1, $structure2, $connectionMap);
     }
     

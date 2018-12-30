@@ -20,6 +20,7 @@
 namespace Circuit\Simple\Structure;
 
 use Circuit\Simple\Structure;
+use Circuit\Simple\Structure\{State, Connection};
 use Circuit\Simple\Structure\Exception\Element as Exception;
 use Circuit\Simple\Structure\Element\{Node, EmptyField, EntryPoint};
 
@@ -34,8 +35,17 @@ class Element extends Structure {
      *
      * @var Structure 
      */
-    protected $instance = null;
+    protected $instance = null; 
     
+    protected $isSimple = null; 
+    
+    protected $elementConnections;
+
+    /**
+     * 
+     * @param mixed $instance
+     * @param array $map
+     */
     public function __construct($instance = null, array $map = null) {
         if (!$instance || !($instance instanceof Structure)) {
             parent::__construct($instance, $map);     
@@ -47,11 +57,73 @@ class Element extends Structure {
         }   
     }
     
-    public function process($state = null) {
-        if ($this->instance) {
-            return $this->instance->process($state);
+    /**
+     * 
+     * @param Structure $connectWith
+     * @param array $connectionMap
+     * @param string $id
+     * @return Connection 
+     */
+    public function connect($connectWith, array $connectionMap = null, $id = '') {
+        return $this->builder->connection($this, $connectWith, $connectionMap, $id);
+    }
+    
+    /**
+     * Initial processing for a state from outside.
+     * @param State $state
+     * @return State
+     */
+    protected function getCurrentState($state) {
+        $value = $state instanceof State ? $state->value() : $state;
+        if (!$value) {
+            $value = [];
         }
-        return parent::process($state);
+        elseif (!is_array($value)) {
+            $value = [$value];
+        }
+        $value[] = $this->id.'_'.microtime();
+        $currentState = new State($value);
+        if ($this->instance) {
+            return $this->instance->process($currentState);
+        }
+        elseif(!$this->isSimple()) {
+            return parent::process($currentState);
+        }
+        else {
+            return $currentState;
+        }
+    }
+    
+    /**
+     * 
+     * @param State $state A state to process
+     * @param string $from ID of the element from which processor function has been called
+     * @return State
+     */
+    public function process($state = null, $from = '', $path = []) {
+        $currentState = $this->getCurrentState($state);
+        $cnt = 0;
+        //Go through each connection and make the elements from the other side process the current state
+        foreach ($this->elementConnections as $connection) {
+            $element = $connection->getThrough($this->id);
+            $cnt++;
+            if ($element->info()['id'] == $from && count($this->elementConnections) >= $cnt) {
+                $this->state = $currentState;
+                return $this->state;
+            }         
+            elseif($element->info()['id'] == $this->id) {
+                continue;
+            }  
+            elseif ($cnt <= count($this->elementConnections) && !in_array($this->id, $path)) {
+                $path[] = $this->id;
+                $currentState = $element->process($currentState, $this->id, $path);
+            }   
+            else {
+                continue;
+            }
+        }
+        $this->state = $currentState;
+        return $this->state;
     }
     
     /**
@@ -106,29 +178,20 @@ class Element extends Structure {
         return $this->instance;
     }
     
-    public function isElementary() {
+    public function isSimple() {
+        if ($this->isSimple !== null) {
+            return $this->isSimple;
+        }
         $nodeCount = count($this->nodes);
         $fieldCount = count($this->emptyFields);
-        $pointCount = 0;
-        foreach ($this->entryPoints as $point) {
-            if ($point instanceof MockEntryPoint){
-                continue;
-            }
-            $pointCount += 1;
-        }
-        return !($nodeCount || $fieldCount || $pointCount);
+        $pointCount = count($this->entryPoints);
+        $this->isSimple = !($nodeCount || $fieldCount || $pointCount);
+        return $this->isSimple; 
     } 
     
     public function formStructure($justMap = true, $useExternal = false, $useEmptyFields = false, $from = []) {
         $from[] = $this->id;
-        $map = [
-            'elements' => [
-                'nodes' => [],
-                'emptyFields' => [],
-                'entryPoints' => []
-            ], 
-            'connections' => []
-        ];
+        $map = [];
         if ($this instanceof Node) {
             $map['elements']['nodes'][] = $this->toMap();
         }
@@ -138,15 +201,32 @@ class Element extends Structure {
         elseif ($this instanceof EntryPoint) {
             $map['elements']['entryPoints'][] = $this->toMap();
         }
-        foreach ($this->connections as $conn) {            
+        foreach ($this->elementConnections as $conn) {            
             $element = $conn->getThrough($this->id);
             if (!$element || in_array($element->info()['id'], $from)) {
                 continue;
             }
             $map['connections'][] = $conn->toMap();
-            $elementMap = $element->formStructure($justMap, $useExternal, $useEmptyFields, $from);
-            $map = array_merge_recursive($map, $elementMap);
+            $map = array_merge_recursive($map, $element->formStructure($justMap, $useExternal, $useEmptyFields, $from));
         }
         return $justMap || count($from)> 0 ? $map : new Structure('', $map);
+    }
+    
+    /**
+     * 
+     * @param Connection $connection
+     * @return boolean
+     * @throws Exception
+     */
+    public function bindConnection($connection) {
+        $id = $connection->info()['id'];    
+        if (!empty($this->elementConnections[$id])) {
+            throw new Exception('This connection already exists.');
+        }
+        elseif (!$connection->hasConnected($this->id)) {
+            throw new Exception("This object doesn't exist in the connection.");
+        }
+        $this->elementConnections[$id] = $connection;
+        return true;
     }
 }

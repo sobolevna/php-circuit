@@ -126,12 +126,12 @@ class Structure {
         $types = ['node', 'emptyField', 'entryPoint'];
         foreach ($types as $type) {
             $array = $type.'s';
-            if (!$map['elements'][$array]) {
+            if (empty($map['elements'][$array])) {
                 continue;
             }
             foreach ($map['elements'][$array] as $elementMap) {
                 $el =  $this->builder->fromMap($elementMap, $type); 
-                $this->{$array}[$el->info()['id']] = &$el;
+                $this->{$array}[$el->info()['id']] = $el;
             }
         }
         foreach ($map['connections'] as $conn) {
@@ -141,8 +141,7 @@ class Structure {
                 throw new Exception('Both connected elements must exist in the structure map');
             }
             $this->connections[$conn['id']] = $this->builder->connection($structure1, $structure2, !empty($conn['map']) ? $conn['map'] : null, $conn['id']);
-        }
-        
+        }        
     } 
     
     /**
@@ -173,8 +172,17 @@ class Structure {
         return $toJson ? json_encode($map) : $map;
     }
     
+    /**
+     * 
+     * @param mixed $state
+     * @return State
+     */
     public function process($state = null) {
-        return new State(['oldValue' => $state->value(), 'newValue'=> date()]);
+        $ret = [];
+        foreach ($this->entryPoints as $p) {
+            $ret[] = $p->process($state instanceof State ? $state : new State($state));
+        }
+        return new State($ret);
     }
     
     public function element() {
@@ -243,36 +251,21 @@ class Structure {
      */
     public function append(&$element, $id = '') {
         $elementId = $id ? $id : $element->info()['id'];
+        if ($this->getElementById($elementId)) {
+            throw new Exception('Element with this id already exists in the structure.');
+        }
         if ($element instanceof EmptyField) {
-            $this->emptyFields[$elementId] = &$element;
+            $this->emptyFields[$elementId] = $element;
         } 
         elseif ($element instanceof EntryPoint) {
-            $this->entryPoints[$elementId] = &$element;
+            $this->entryPoints[$elementId] = $element;
         }
         elseif ($element instanceof Node) {
-            $this->nodes[$elementId] = &$element;
+            $this->nodes[$elementId] = $element;
         }
         else {
             throw new Exception('You can append to a structure onle specified elements -- Nodes, Entry points or Empty Fields');
         }
-    }
-    
-    /**
-     * 
-     * @param Connection $connection
-     * @return boolean
-     * @throws Exception
-     */
-    public function bindConnection(&$connection) {
-        $id = $connection->info()['id'];        
-        if (!empty($this->connections[$id])) {
-            throw new Exception('This connection already exists.');
-        }
-        elseif (!$connection->hasConnected($this->id)) {
-            throw new Exception("This object doesn't exist in the connection.");
-        }
-        $this->connections[$id] = &$connection;
-        return true;
     }
     
     /**

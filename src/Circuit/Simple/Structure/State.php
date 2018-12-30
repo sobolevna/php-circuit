@@ -61,7 +61,7 @@ class State extends Structure{
         }
     }
     
-    public function getValue() {
+    public function value() {
         return $this->value;
     }
     
