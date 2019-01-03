@@ -59,8 +59,24 @@ class Builder {
         throw new Exception('Invalid settings for building an empty field');
     }
     
-    public function connection($structure1, $structure2, array $connectionMap = null, $id = '') {
-        return new Connection($id, $structure1, $structure2, $connectionMap);
+    public function connection($structure1, $structure2, array $connectionMap = null, $id = '', $type='') {
+        $class = $this->getConnectionClass($type);
+        if (!class_exists($class)) {
+            throw new Exception\Connection('Invalid connection class');
+        }
+        return new $class($id, $structure1, $structure2, $connectionMap);
+    }
+    
+    protected function getConnectionClass($type = ''){
+        $typeMap = [
+            'element' => Connection\Inner\Element\Simple::class,
+            'inter' => Connection\Outer\Inter::class,
+            'trans' => Connection\Outer\Trans\Simple::class
+        ];
+        if (!empty($typeMap[$type])) {
+            return $typeMap[$type];
+        }
+        return Connection::class;
     }
     
     public function fromMap($structureMap, $type) {

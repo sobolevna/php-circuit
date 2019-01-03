@@ -21,7 +21,6 @@ namespace Circuit\Simple\Structure;
 
 use Circuit\Simple\Structure;
 use Circuit\Simple\Structure\Exception\Connection as Exception;
-use Circuit\Simple\Structure\Element\EntryPoint;
 
 
 /**
@@ -37,20 +36,11 @@ class Connection extends Structure {
      */
     protected $connected;
     
-    /**
-     * If the connection is between 2 empty entry points
-     * @var bool 
-     */
-    protected $isStraight = false;
-
     public function __construct($id, &$structure1, &$structure2) {
         if ($this->checkConnectionTypes($structure1,$structure2)) {
             $connectionId = !$id ? [$structure1->info()['id'], $structure2->info()['id']] : $id;
             $this->connected[$structure1->info()['id']] = &$structure1;
             $this->connected[$structure2->info()['id']] = &$structure2;
-            if ($structure1->element() instanceof EntryPoint && $structure1->element()->isElementary() && $structure2->element() instanceof EntryPoint && $structure2->element()->isElementary()) {
-                $this->isStraight = true;
-            }
             parent::__construct($connectionId, null); 
             $structure1->bindConnection($this);
             $structure2->bindConnection($this);
@@ -70,13 +60,7 @@ class Connection extends Structure {
         }
         return $id[0].'-<|>-'.$id[1];
     }
-    
-    public function info() {
-        $info = parent::info();
-        $info['isStraight'] = $this->isStraight;
-        return $info;
-    } 
-    
+        
     /**
      * Nodes can be connected to anything. 
      * Entry points can be connected internally to nodes, 
@@ -87,16 +71,10 @@ class Connection extends Structure {
      * @return boolean
      */
     protected function checkConnectionTypes($structure1, $structure2) {
-        if (!($structure1 instanceof Element && $structure2 instanceof Element)){
+        if (!($structure1 instanceof Structure && $structure2 instanceof Structure)){
             return false;
-        }            
-        elseif ($structure1 instanceof Element\Node || $structure2 instanceof Element\Node) {
-            return true;
-        }
-        elseif ($structure1 instanceof Element\EntryPoint && $structure2 instanceof Element\EntryPoint) {
-            return true;
-        }
-        return false;
+        }          
+        return true;
     }    
     
     /**

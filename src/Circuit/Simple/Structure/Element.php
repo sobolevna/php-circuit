@@ -65,7 +65,7 @@ class Element extends Structure {
      * @return Connection 
      */
     public function connect($connectWith, array $connectionMap = null, $id = '') {
-        return $this->builder->connection($this, $connectWith, $connectionMap, $id);
+        return $this->builder->connection($this, $connectWith, $connectionMap, $id, 'element');
     }
     
     /**
