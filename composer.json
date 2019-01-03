@@ -4,14 +4,13 @@
     "authors": [
         {
             "name": "sobolevna",
-            "email": "your@email.here"
+            "email": "sobolevna@gmail.com"
         }
     ],
     "require": {},
     "autoload": {
         "psr-4": {
-            "Circuit\\Simple\\": "src/Circuit/Simple",
-            "Circuit\\Interfaces\\": "src/Circuit/Interfaces"
+            "Circuit\\": "src/Circuit"
         }
     }
 }
