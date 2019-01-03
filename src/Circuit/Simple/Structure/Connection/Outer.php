@@ -22,7 +22,7 @@ namespace Circuit\Simple\Structure\Connection;
 use Circuit\Simple\Structure\Connection;
 
 /**
- * Description of Inner
+ * Connection class for connecting a structure to another one
  *
  * @author sobolevna
  */

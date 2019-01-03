@@ -23,7 +23,7 @@ namespace Circuit\Simple\Structure\Connection\Inner\Element;
 use Circuit\Simple\Structure\Connection\Inner\Element;
 
 /**
- * Description of Simple
+ * This connection is only between simple elements -- without any lesser elements within them
  *
  * @author sobolevna
  */

@@ -23,7 +23,7 @@ use Circuit\Simple\Structure\Element as StructureElement;
 use Circuit\Simple\Structure\Connection\Inner;
 
 /**
- * Description of Element
+ * A basic connection class for connectionf elements
  *
  * @author sobolevna
  */

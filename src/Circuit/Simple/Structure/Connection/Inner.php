@@ -23,7 +23,7 @@ use Circuit\Simple\Structure\Element;
 use Circuit\Simple\Structure\Connection;
 
 /**
- * Description of Inner
+ * This is an abstract connection type for connecting elements in a structure
  *
  * @author sobolevna
  */

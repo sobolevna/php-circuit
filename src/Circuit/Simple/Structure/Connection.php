@@ -24,7 +24,7 @@ use Circuit\Simple\Structure\Exception\Connection as Exception;
 
 
 /**
- * Description of Connection
+ * Basic connection class with basic methods
  *
  * @author sobolevna
  */
