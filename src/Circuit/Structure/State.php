@@ -69,13 +69,13 @@ class State extends Structure{
         return $this;
     }
     
-    public function toMap($toJson = false) {
+    protected function toMap($toJson = false) {
         $map = [
             'id' => $this->id,
             'value' => \serialize($this->value),
             'instance' => self::class,
-            'map' => $this->instance ? $this->instance->toMap(false) : ''
+            'map' => $this->instance ? $this->instance->getMap(false) : ''
         ];
-        return $toJson ? json_encode($map) : $map;
+        return $map;
     }
 }

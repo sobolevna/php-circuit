@@ -34,6 +34,12 @@ class Structure {
     protected $id;
     
     /**
+     * A map from which the structure was built
+     * @var array 
+     */
+    protected $map;
+
+    /**
      *
      * @var State 
      */
@@ -123,6 +129,7 @@ class Structure {
      */
     protected function fromMap($structureMap) {
         $map = $this->builder->checkAndGetStructureMap($structureMap);  
+        $this->map = $map;
         $types = ['node', 'emptyField', 'entryPoint'];
         foreach ($types as $type) {
             $array = $type.'s';
@@ -135,21 +142,31 @@ class Structure {
             }
         }
         foreach ($map['connections'] as $conn) {
-            $structure1 = $this->getElementById($conn['connected'][0]);
-            $structure2 = $this->getElementById($conn['connected'][1]);
-            if (!$structure1 || !$structure2) {
-                throw new Exception('Both connected elements must exist in the structure map');
-            }
-            $this->connections[$conn['id']] = $this->builder->connection($structure1, $structure2, !empty($conn['map']) ? $conn['map'] : null, $conn['id']);
+            $this->connectionsFromMap($conn);
         }        
     } 
     
+    protected function connectionsFromMap($conn) {
+        $structure1 = $this->getElementById($conn['connected'][0]);
+        $structure2 = $this->getElementById($conn['connected'][1]);
+        if (!$structure1 || !$structure2) {
+            throw new Exception('Both connected elements must exist in the structure map');
+        }
+        $this->connections[$conn['id']] = $this->builder->connection($structure1, $structure2, !empty($conn['map']) ? $conn['map'] : null, $conn['id']);
+    }
+
+
     /**
      * Recursively converts a structure to a map
      * @param bool $toJson
      * @return array|string
      */
-    public function toMap($toJson = false) {
+    public function getMap($toJson = false, $force = false) {
+        $this->map = !$this->map || $force ? $this->toMap() : $this->map;   
+        return $toJson ? json_encode($this->map) : $this->map; 
+    }
+    
+    protected function toMap() {
         $map = [
             'id' => $this->id,
             'elements' => [
@@ -158,18 +175,18 @@ class Structure {
                 'entryPoints' => []
             ], 
             'connections' => [],
-            'state' =>$this->state->toMap(),
+            'state' =>$this->state->getMap(),
             'instance' => get_class($this)
         ];
         foreach (['nodes', 'emptyFields', 'entryPoints'] as $type) {
             foreach ($this->$type as $key=>$value) {
-                $map['elements'][$type][$key] = $value->toMap();
+                $map['elements'][$type][$key] = $value->getMap();
             }
         }
         foreach ($this->connections as $key=>$value) {
-            $map['connections'][$key] = $value->toMap();
+            $map['connections'][$key] = $value->getMap();
         }
-        return $toJson ? json_encode($map) : $map;
+        return $map;
     }
     
     /**
@@ -190,7 +207,7 @@ class Structure {
             return $this;
         }
         if (!$this->element || !($this->element instanceof Element)) {
-            $this->element = new Element($this);
+            $this->element = new Element($this->id, $this->map);
         }
         return $this->element;
     }

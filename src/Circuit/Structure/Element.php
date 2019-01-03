@@ -98,6 +98,7 @@ class Element extends Structure {
      * 
      * @param State $state A state to process
      * @param string $from ID of the element from which processor function has been called
+     * @param array $path A list of previous elements having processed the state
      * @return State
      */
     public function process($state = null, $from = '', $path = []) {
@@ -110,10 +111,7 @@ class Element extends Structure {
             if ($element->info()['id'] == $from && count($this->elementConnections) >= $cnt) {
                 $this->state = $currentState;
                 return $this->state;
-            }         
-            elseif($element->info()['id'] == $this->id) {
-                continue;
-            }  
+            }       
             elseif ($cnt <= count($this->elementConnections) && !in_array($this->id, $path)) {
                 $path[] = $this->id;
                 $currentState = $element->process($currentState, $this->id, $path);
@@ -193,20 +191,20 @@ class Element extends Structure {
         $from[] = $this->id;
         $map = [];
         if ($this instanceof Node) {
-            $map['elements']['nodes'][] = $this->toMap();
+            $map['elements']['nodes'][] = $this->getMap();
         }
         elseif ($this instanceof EmptyField) {
-            $map['elements']['emptyFields'][] = $this->toMap();
+            $map['elements']['emptyFields'][] = $this->getMap();
         }
         elseif ($this instanceof EntryPoint) {
-            $map['elements']['entryPoints'][] = $this->toMap();
+            $map['elements']['entryPoints'][] = $this->getMap();
         }
         foreach ($this->elementConnections as $conn) {            
             $element = $conn->getThrough($this->id);
             if (!$element || in_array($element->info()['id'], $from)) {
                 continue;
             }
-            $map['connections'][] = $conn->toMap();
+            $map['connections'][] = $conn->getMap();
             $map = array_merge_recursive($map, $element->formStructure($justMap, $useExternal, $useEmptyFields, $from));
         }
         return $justMap || count($from)> 0 ? $map : new Structure('', $map);

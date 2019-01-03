@@ -140,9 +140,9 @@ class Connection extends Structure {
      * @param bool $toJson
      * @return array|string
      */
-    public function toMap($toJson = false) {
+    protected function toMap() {
         $map = parent::toMap(false);
         $map['connected'] = \array_keys($this->connected);
-        return $toJson ? json_encode($map) : $map;
+        return $map;
     }
 }
