@@ -87,7 +87,6 @@ class Structure {
         if (!empty($map)) {
             $this->fromMap($map);
         }
-        $this->state = new State();
     } 
     
     /**
@@ -157,8 +156,9 @@ class Structure {
 
 
     /**
-     * Recursively converts a structure to a map
-     * @param bool $toJson
+     * Gets structure map and builds it if there is none.
+     * @param boolean $toJson
+     * @param boolean $force 
      * @return array|string
      */
     public function getMap($toJson = false, $force = false) {
@@ -166,6 +166,10 @@ class Structure {
         return $toJson ? json_encode($this->map) : $this->map; 
     }
     
+    /**
+     * Recursively converts a structure to a map
+     * @return array
+     */
     protected function toMap() {
         $map = [
             'id' => $this->id,
@@ -175,7 +179,7 @@ class Structure {
                 'entryPoints' => []
             ], 
             'connections' => [],
-            'state' =>$this->state->getMap(),
+            'state' =>$this->state ? $this->state->getMap() : '',
             'instance' => get_class($this)
         ];
         foreach (['nodes', 'emptyFields', 'entryPoints'] as $type) {
@@ -197,17 +201,20 @@ class Structure {
     public function process($state = null) {
         $ret = [];
         foreach ($this->entryPoints as $p) {
-            $ret[] = $p->process($state instanceof State ? $state : new State($state));
+            if ($p instanceof EntryPoint\Out || !$p->checkStateType($state)) {
+                continue;
+            }
+            $ret[] = $p->process($state instanceof State ? $state : new State($state))->value();
         }
-        return new State($ret);
+        return $this->state = new State($ret);
     }
-    
+        
     public function element() {
         if($this instanceof Element) {
             return $this;
         }
         if (!$this->element || !($this->element instanceof Element)) {
-            $this->element = new Element($this->id, $this->map);
+            $this->element = new Element($this);
         }
         return $this->element;
     }
@@ -288,8 +295,8 @@ class Structure {
     /**
      * Get element of the structure by its ID. 
      * Doesn't work with EmptyFeild content.
-     * @param type $id
-     * @return type
+     * @param string $id
+     * @return Structure
      */
     public function getElementById($id) {
         if (!empty($this->nodes[$id])) {

@@ -26,7 +26,7 @@ use Circuit\Structure;
  *
  * @author sobolevna
  */
-class State extends Structure{
+class State extends Structure {
     
     protected $value;
     
@@ -34,12 +34,11 @@ class State extends Structure{
      *
      * @var Structure 
      */
-    protected $instance;
-
-    public function __construct($value = null, $id = '', $instance = null) {
-        $this->id = $this->setId($id);
-        $this->value = $value;
-        $this->instance = $instance instanceof Structure ? $instance : null;
+    protected $instance; 
+    
+    public function __construct($value = null, $id = '', $map = null, $from = '') {
+        parent::__construct($id, $map);
+        $this->value = $value instanceof State ? $value->value() : $value;
     }
     
         
@@ -69,7 +68,7 @@ class State extends Structure{
         return $this;
     }
     
-    protected function toMap($toJson = false) {
+    protected function toMap() {
         $map = [
             'id' => $this->id,
             'value' => \serialize($this->value),
@@ -77,5 +76,10 @@ class State extends Structure{
             'map' => $this->instance ? $this->instance->getMap(false) : ''
         ];
         return $map;
+    }
+    
+    protected function fromMap($structureMap) {
+        parent::fromMap($structureMap);
+        $this->value = unserialize($this->map['value']);
     }
 }

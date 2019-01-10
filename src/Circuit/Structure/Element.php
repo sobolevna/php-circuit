@@ -37,6 +37,10 @@ class Element extends Structure {
      */
     protected $instance = null; 
     
+    /**
+     *
+     * @var boolean
+     */
     protected $isSimple = null; 
     
     protected $elementConnections;
@@ -50,10 +54,11 @@ class Element extends Structure {
         if (!$instance || !($instance instanceof Structure)) {
             parent::__construct($instance, $map);     
         }
-        else {
-            $this->instance = &$instance;     
-            $this->builder = &$instance->builder(); 
-            $this->state = &$instance->getState(); 
+        elseif (is_object($instance) && $instance instanceof Structure) {
+            $this->instance = $instance;     
+            $this->builder = $instance->builder(); 
+            $this->fromMap($instance->getMap());
+            $this->id = $instance->info()['id'];
         }   
     }
     
@@ -74,24 +79,29 @@ class Element extends Structure {
      * @return State
      */
     protected function getCurrentState($state) {
-        $value = $state instanceof State ? $state->value() : $state;
-        if (!$value) {
-            $value = [];
+        if ($state && !($state instanceof State)) {
+            throw new Exception('You should process either a state ot nothing');
         }
-        elseif (!is_array($value)) {
-            $value = [$value];
-        }
-        $value[] = $this->id.'_'.microtime();
-        $currentState = new State($value);
         if ($this->instance) {
-            return $this->instance->process($currentState);
+            return $this->instance->process($state);
         }
         elseif(!$this->isSimple()) {
-            return parent::process($currentState);
+            return parent::process($state);
         }
         else {
-            return $currentState;
+            return $this->doProcess($state);
         }
+    }
+    
+    /**
+     * The real processor function for a simple element. 
+     * Do anything you want with the state. 
+     * Don't forget to return a state!
+     * @param State $state
+     * @return State
+     */
+    protected function doProcess($state) {
+        return $state;
     }
     
     /**
@@ -101,20 +111,31 @@ class Element extends Structure {
      * @param array $path A list of previous elements having processed the state
      * @return State
      */
-    public function process($state = null, $from = '', $path = []) {
+    public function process($state, $useDispatcher = false) {
         $currentState = $this->getCurrentState($state);
+        $path = $state->path;
+        $path[] = $this->id;
+        $currentState->from = $this->id;
+        $currentState->path = $path;
+        if (!$useDispatcher) {
+            return $this->dispatch($currentState);
+        }
+        $this->state = $currentState;
+        return $this->state;        
+    }
+    
+    protected function dispatch($currentState) {
         $cnt = 0;
         //Go through each connection and make the elements from the other side process the current state
         foreach ($this->elementConnections as $connection) {
             $element = $connection->getThrough($this->id);
             $cnt++;
-            if ($element->info()['id'] == $from && count($this->elementConnections) >= $cnt) {
+            if ($element->info()['id'] == $state->from && count($this->elementConnections) >= $cnt) {
                 $this->state = $currentState;
                 return $this->state;
             }       
             elseif ($cnt <= count($this->elementConnections) && !in_array($this->id, $path)) {
-                $path[] = $this->id;
-                $currentState = $element->process($currentState, $this->id, $path);
+                $currentState = $element->process($currentState);
             }   
             else {
                 continue;
@@ -123,7 +144,7 @@ class Element extends Structure {
         $this->state = $currentState;
         return $this->state;
     }
-    
+        
     /**
      * Converts element as a node. 
      * A node will return $this.
@@ -165,7 +186,7 @@ class Element extends Structure {
     }
     
     public function toEmptyField() {
-        ;
+        return new EmptyField($this);
     }
     
     /**

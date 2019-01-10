@@ -19,8 +19,8 @@
 
 namespace Circuit\Structure\Element;
 
-use Circuit\Exception;
-use Circuit\Structure\{Connection, Element};
+use Circuit\Structure\Exception\Element as Exception;
+use Circuit\Structure\{Connection, Element, State};
 
 /**
  * Description of EntryPoint
@@ -35,15 +35,18 @@ class EntryPoint extends Element {
      */
     protected $connectionInterface;
     
+    protected $stateType;
+
     /**
      *
      * @var Connection 
      */
-    protected $externalConnection;
+    protected $transConnection;
 
-    public function __construct($instance = null, array $map = null, $connectionInterface = Connection::class) {
+    public function __construct($instance = null, array $map = null, $connectionInterface = Connection::class, $stateType = State::class) {
         parent::__construct($instance, $map);
         $this->connectionInterface = $connectionInterface;
+        $this->stateType = $stateType;
     }
     
     public function connectExternal(&$target, string $connectionInterface = Connection::class, $id = '') {
@@ -67,5 +70,19 @@ class EntryPoint extends Element {
             return $this->connectInternal($connectWith, $this->connectionInterface, $id);
         }
         throw new Exception('Entry point must be connected euther to another entry point or a node');
+    }
+    
+    public function process($state, $from = '', $path = []) {
+        if (!$this->checkStateType($state)) {
+            throw new Exception('Invalid state type');
+        }
+        return parent::process($state, $this->id, $path);
+    }
+    
+    public function checkStateType($state) {
+        if (!$state || $state instanceof $this->stateType) {
+            return true;
+        }
+        return false;
     }
 }
