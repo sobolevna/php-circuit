@@ -105,11 +105,11 @@ class Connection extends Structure {
      * @param type $id
      * @return type
      */
-    public function getElementById($id) {
+    public function getById($id) {
         if (!empty($this->connected[$id])) {
             return $this->connected[$id];
         }
-        return parent::getElementById($id);
+        return parent::getById($id);
     }
     
     /**

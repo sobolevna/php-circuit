@@ -8,13 +8,15 @@ $entryPoint2 = new \Circuit\Structure\Element\EntryPoint('ep2');
 $emptyField1 = new \Circuit\Structure\Element\EmptyField('ef1');
 
 $node1->connect($entryPoint1);
-//$node2->connect($entryPoint2);
-//$node1->connect($node2);
+$node2->connect($entryPoint2);
+$node1->connect($node2);
 
 $emptyField1->connect($node1);
 
-$map = $emptyField1->formStructure();
+$map = $emptyField1->formStructure(); 
 
 $structure = new \Circuit\Structure('s1', $map);
 
-print_r($structure->process());
+$structure->process();
+
+print_r($structure->getMap()['processes']);

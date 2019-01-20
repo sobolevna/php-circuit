@@ -72,11 +72,11 @@ class EntryPoint extends Element {
         throw new Exception('Entry point must be connected euther to another entry point or a node');
     }
     
-    public function process($state, $from = '', $path = []) {
+    public function process($state = null) {
         if (!$this->checkStateType($state)) {
             throw new Exception('Invalid state type');
         }
-        return parent::process($state, $this->id, $path);
+        return parent::process($state);
     }
     
     public function checkStateType($state) {

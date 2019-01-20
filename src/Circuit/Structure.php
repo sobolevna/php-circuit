@@ -146,8 +146,8 @@ class Structure {
     } 
     
     protected function connectionsFromMap($conn) {
-        $structure1 = $this->getElementById($conn['connected'][0]);
-        $structure2 = $this->getElementById($conn['connected'][1]);
+        $structure1 = $this->getById($conn['connected'][0]);
+        $structure2 = $this->getById($conn['connected'][1]);
         if (!$structure1 || !$structure2) {
             throw new Exception('Both connected elements must exist in the structure map');
         }
@@ -199,16 +199,25 @@ class Structure {
      * @return State
      */
     public function process($state = null) {
+        $map = $this->getMap();
+        if (empty($map['processes'])) {
+            $this->map = $this->builder->buildProcessMap($this);
+        }
         $ret = [];
-        foreach ($this->entryPoints as $p) {
-            if ($p instanceof EntryPoint\Out || !$p->checkStateType($state)) {
-                continue;
+        foreach ($this->map['processes'] as $process) {
+            $currentState = $state instanceof State ? $state : new State($state);
+            foreach ($process as $element) {
+                $currentState = $this->getById($element)->process($currentState);
             }
-            $ret[] = $p->process($state instanceof State ? $state : new State($state))->value();
+            $ret[] = $currentState->value();
         }
         return $this->state = new State($ret);
     }
-        
+    
+    /**
+     * 
+     * @return Element
+     */
     public function element() {
         if($this instanceof Element) {
             return $this;
@@ -275,7 +284,7 @@ class Structure {
      */
     public function append(&$element, $id = '') {
         $elementId = $id ? $id : $element->info()['id'];
-        if ($this->getElementById($elementId)) {
+        if ($this->getById($elementId)) {
             throw new Exception('Element with this id already exists in the structure.');
         }
         if ($element instanceof EmptyField) {
@@ -288,7 +297,7 @@ class Structure {
             $this->nodes[$elementId] = $element;
         }
         else {
-            throw new Exception('You can append to a structure onle specified elements -- Nodes, Entry points or Empty Fields');
+            throw new Exception('You can append to a structure only specified elements -- Nodes, Entry points or Empty Fields');
         }
     }
     
@@ -298,7 +307,7 @@ class Structure {
      * @param string $id
      * @return Structure
      */
-    public function getElementById($id) {
+    public function getById($id) {
         if (!empty($this->nodes[$id])) {
             return $this->nodes[$id];
         }

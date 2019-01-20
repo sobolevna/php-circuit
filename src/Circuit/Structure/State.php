@@ -36,7 +36,11 @@ class State extends Structure {
      */
     protected $instance; 
     
-    public function __construct($value = null, $id = '', $map = null, $from = '') {
+    public $path;
+
+    public $from;
+
+    public function __construct($value = null, $id = '', $map = null) {
         parent::__construct($id, $map);
         $this->value = $value instanceof State ? $value->value() : $value;
     }

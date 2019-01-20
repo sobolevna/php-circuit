@@ -111,45 +111,20 @@ class Element extends Structure {
      * @param array $path A list of previous elements having processed the state
      * @return State
      */
-    public function process($state, $useDispatcher = false) {
+    public function process($state = null) {
         $currentState = $this->getCurrentState($state);
         $path = $state->path;
         $path[] = $this->id;
         $currentState->from = $this->id;
         $currentState->path = $path;
-        if (!$useDispatcher) {
-            return $this->dispatch($currentState);
-        }
         $this->state = $currentState;
         return $this->state;        
-    }
-    
-    protected function dispatch($currentState) {
-        $cnt = 0;
-        //Go through each connection and make the elements from the other side process the current state
-        foreach ($this->elementConnections as $connection) {
-            $element = $connection->getThrough($this->id);
-            $cnt++;
-            if ($element->info()['id'] == $state->from && count($this->elementConnections) >= $cnt) {
-                $this->state = $currentState;
-                return $this->state;
-            }       
-            elseif ($cnt <= count($this->elementConnections) && !in_array($this->id, $path)) {
-                $currentState = $element->process($currentState);
-            }   
-            else {
-                continue;
-            }
-        }
-        $this->state = $currentState;
-        return $this->state;
     }
         
     /**
      * Converts element as a node. 
      * A node will return $this.
-     * True empty fields (without all their internal entry points with structures) 
-     * can't be converted. 
+     * Filled empty fields can't be converted. 
      * Entry points are not to have external connections.
      * @return \Circuit\Structure\Element\Node
      */
