@@ -80,6 +80,12 @@ class Structure {
      * @var Connection[]
      */
     protected $connections = [];
+    
+    /**
+     *
+     * @var Process[]
+     */
+    protected $processes = [];
 
     public function __construct($id = '', array $map = null) {
         $this->id = $this->setId($id);
@@ -102,9 +108,7 @@ class Structure {
         elseif (!$id) {
             return get_class($this).'_'.microtime();
         }
-        else {
-            throw new Exception('Invalid id');
-        }
+        throw new Exception('Invalid id');
     }
     
     protected function buildBuilder() {
@@ -124,10 +128,36 @@ class Structure {
     /**
      * 
      * @param mixed $structureMap
+     * @return array
+     * @throws Exception
+     */
+    protected function checkAndGetStructureMap($structureMap) {
+        if (is_string($structureMap)) {
+            $map = json_decode($structureMap, true);
+            if (!$map) {
+                throw new Exception('The given string is not a valid JSON');
+            }
+        } elseif (!is_array($structureMap)) {
+            throw new Exception('A map must be either an array or JSON string');
+        } else {
+            $map = $structureMap;
+        }
+        if (!array_key_exists('elements', $structureMap) && !array_key_exists('nodes', $map['elements']) && !array_key_exists('emptyFields', $map['elements']) && !array_key_exists('entryPoints', $map['elements'])) {
+            throw new Exception('The map has no elements');
+        }
+        if (empty($map['connections'])) {
+            throw new Exception('There should be at least one connection');
+        }
+        return $map;
+    }
+    
+    /**
+     * 
+     * @param mixed $structureMap
      * @return Structure
      */
     protected function fromMap($structureMap) {
-        $map = $this->builder->checkAndGetStructureMap($structureMap);  
+        $map = $this->checkAndGetStructureMap($structureMap);  
         $this->map = $map;
         $types = ['node', 'emptyField', 'entryPoint'];
         foreach ($types as $type) {
@@ -179,16 +209,17 @@ class Structure {
                 'entryPoints' => []
             ], 
             'connections' => [],
-            'state' =>$this->state ? $this->state->getMap() : '',
-            'instance' => get_class($this)
+            'state' => $this->state ? $this->state->getMap() : '',
+            'instance' => get_class($this),
+            'processes' => []
         ];
         foreach (['nodes', 'emptyFields', 'entryPoints'] as $type) {
-            foreach ($this->$type as $key=>$value) {
-                $map['elements'][$type][$key] = $value->getMap();
+            foreach ($this->$type as $element) {
+                $map['elements'][$type][] = $element->getMap();
             }
         }
-        foreach ($this->connections as $key=>$value) {
-            $map['connections'][$key] = $value->getMap();
+        foreach ($this->connections as $connection) {
+            $map['connections'][] = $connection->getMap();
         }
         return $map;
     }
@@ -199,16 +230,13 @@ class Structure {
      * @return State
      */
     public function process($state = null) {
-        $map = $this->getMap();
-        if (empty($map['processes'])) {
-            $this->map = $this->builder->buildProcessMap($this);
+        if (empty($this->processes)) {
+            $this->processes = $this->builder->buildProcessMap($this);
         }
         $ret = [];
-        foreach ($this->map['processes'] as $process) {
-            $currentState = $state instanceof State ? $state : new State($state);
-            foreach ($process as $element) {
-                $currentState = $this->getById($element)->process($currentState);
-            }
+        $currentState = $state instanceof State ? $state : new State($state);
+        foreach ($this->processes as $process) {
+            $currentState = $process->process($currentState);
             $ret[] = $currentState->value();
         }
         return $this->state = new State($ret);
@@ -219,10 +247,7 @@ class Structure {
      * @return Element
      */
     public function element() {
-        if($this instanceof Element) {
-            return $this;
-        }
-        if (!$this->element || !($this->element instanceof Element)) {
+        if (!$this->element) {
             $this->element = new Element($this);
         }
         return $this->element;
@@ -282,7 +307,7 @@ class Structure {
      * @param string $id
      * @throws Exception
      */
-    public function append(&$element, $id = '') {
+    public function append($element, $id = '') {
         $elementId = $id ? $id : $element->info()['id'];
         if ($this->getById($elementId)) {
             throw new Exception('Element with this id already exists in the structure.');
@@ -319,7 +344,11 @@ class Structure {
         }
         if (!empty($this->connections[$id])) {
             return $this->connections[$id];
+        }    
+        if (!empty($this->processes[$id])) {
+            return $this->processes[$id];
         }        
+        return null;
     }
         
 }
