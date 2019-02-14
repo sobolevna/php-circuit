@@ -19,7 +19,8 @@
 
 namespace Circuit\Structure\Element;
 
-use Circuit\{Structure, Exception};
+use Circuit\Structure;
+use Circuit\Structure\Exception\Element as Exception;
 use Circuit\Structure\{Element, State};
 
 /**
@@ -31,9 +32,9 @@ class EmptyField extends Element {
     
     /**
      *
-     * @var Structure[] 
+     * @var Structure
      */
-    protected $contents = [];
+    protected $contents;
     
     public function fill(&$structure, array $structureEntryPoints = null, array $fieldEntryPoints = null, array $connectionInterfaceMap = null) {
         try {
@@ -93,5 +94,23 @@ class EmptyField extends Element {
             $currentState = $state;
         }
         return parent::process($currentState, $from, $path);
+    } 
+    
+    public function toNode() {
+        if (!$this->contents) {
+            return parent::toNode();
+        }
+        throw new Exception('Empty field with contents cannot be converted');
+    }
+    
+    public function toEmptyField() {
+        return $this;
+    }
+    
+    public function toEntryPoint() {
+        if (!$this->contents) {
+            return parent::toEntryPoint();
+        }
+        throw new Exception('Empty field with contents cannot be converted');
     }
 }

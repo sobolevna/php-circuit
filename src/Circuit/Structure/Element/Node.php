@@ -27,5 +27,9 @@ use Circuit\Structure\Element;
  * @author sobolevna
  */
 class Node extends Element {
-    //put your code here
+    
+    public function toNode() {
+        return $this;
+    }
+        
 }

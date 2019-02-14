@@ -66,7 +66,7 @@ class EntryPoint extends Element {
         if ($connectWith instanceof Element\EntryPoint) {
             return $this->connectExternal($connectWith, $this->connectionInterface, $id);
         }
-        elseif ($connectWith instanceof Element\EmptyField) {
+        elseif ($connectWith instanceof Element\Node) {
             return $this->connectInternal($connectWith, $this->connectionInterface, $id);
         }
         throw new Exception('Entry point must be connected euther to another entry point or a node');
@@ -84,5 +84,23 @@ class EntryPoint extends Element {
             return true;
         }
         return false;
+    }
+    
+    public function toNode() {
+        if (!$this->transConnection) {
+            return parent::toNode();
+        }
+        throw new Exception('Entry point with a trans-connection cannot be converted');
+    }
+    
+    public function toEmptyField() {
+        if (!$this->transConnection) {
+            return parent::toEmptyField();
+        }
+        throw new Exception('Entry point with a trans-connection cannot be converted');
+    }
+    
+    public function toEntryPoint() {
+        return $this;
     }
 }

@@ -129,35 +129,11 @@ class Element extends Structure {
      * @return \Circuit\Structure\Element\Node
      */
     public function toNode() {
-        if (get_class($this) == Element::class) {
-            return new Node($this);
-        }
-        elseif ($this instanceof Node) {
-            return $this;
-        }
-        elseif ($this instanceof EmptyField && $this->isEmpty()) {
-            return new Node($this);
-        }
-        elseif ($this instanceof EntryPoint && !$this->hasExternalConnection()) {
-            return new Node($this);
-        }
-        throw new Exception('Invalid class to convert to Node');
+        return new Node($this);
     }
     
     public function toEntryPoint() {
-        if (get_class($this) == Element::class) {
-            return new EntryPoint($this);
-        }
-        elseif ($this instanceof EntryPoint ) {
-            return $this;
-        }
-        elseif ($this instanceof Node) {
-            return new EntryPoint($this);
-        }
-        elseif ($this instanceof EmptyField && $this->isEmpty()) {
-            return new Node($this);
-        }
-        throw new Exception('Invalid class to convert to EntryPoint');
+        return new EntryPoint($this);
     }
     
     public function toEmptyField() {
@@ -183,9 +159,11 @@ class Element extends Structure {
         return $this->isSimple; 
     } 
     
-    public function formStructure($justMap = true, $useExternal = false, $useEmptyFields = false, $from = []) {
-        $from[] = $this->id;
-        $map = [];
+    protected function prepareMap() {
+        $map = [
+            'elements'=>[],
+            'connections'=>[]
+        ];
         if ($this instanceof Node) {
             $map['elements']['nodes'][] = $this->getMap();
         }
@@ -195,6 +173,32 @@ class Element extends Structure {
         elseif ($this instanceof EntryPoint) {
             $map['elements']['entryPoints'][] = $this->getMap();
         }
+        return $map;
+    }
+    
+    protected function correctMap($map) {        
+        foreach (['nodes', 'emptyFields', 'entryPoints'] as $elementType) {
+            if (empty($map['elements'][$elementType])) {
+                continue;
+            }
+            $map['elements'][$elementType] = array_unique($map['elements'][$elementType], SORT_REGULAR);
+        }
+        $map['connections'] = !empty($map['connections']) ? array_unique($map['connections'], SORT_REGULAR) : $map['connections'];
+        return $map;
+    }
+    
+    /**
+     * Recursively uses all element's connections to form a structure
+     * @todo Algorythm needs optimizing
+     * @param boolean $justMap
+     * @param boolean $useExternal
+     * @param boolean $useEmptyFields
+     * @param array $from
+     * @return mixed
+     */
+    public function formStructure($justMap = true, $useExternal = false, $useEmptyFields = false, $from = []) {
+        $from[] = $this->id;
+        $map = $this->prepareMap();
         foreach ($this->elementConnections as $conn) {            
             $element = $conn->getThrough($this->id);
             if (!$element || in_array($element->info()['id'], $from)) {
@@ -202,8 +206,9 @@ class Element extends Structure {
             }
             $map['connections'][] = $conn->getMap();
             $map = array_merge_recursive($map, $element->formStructure($justMap, $useExternal, $useEmptyFields, $from));
-        }
-        return $justMap || count($from)> 0 ? $map : new Structure('', $map);
+        }        
+        $correctMap = $this->correctMap($map);
+        return $justMap || count($from)> 0 ? $correctMap : new Structure('', $correctMap);
     }
     
     /**
@@ -222,5 +227,13 @@ class Element extends Structure {
         }
         $this->elementConnections[$id] = $connection;
         return true;
+    }
+    
+    /**
+     * 
+     * @return $this
+     */
+    public function element() {
+        return $this;
     }
 }
