@@ -81,6 +81,10 @@ class Map {
      */
     protected $fields = ['id', 'type', 'elements', 'connections', 'processes', 'state']; 
     
+    /**
+     *
+     * @var array
+     */
     protected $defaultClasses = [
         'structure' => Structure::class,
         'node' => Node::class,
@@ -97,11 +101,16 @@ class Map {
      * @throws Exception
      */
     public function __construct($mapContents = null) {
+        $this->validator = new Map\Validator($this); 
         if (!empty($mapContents)) {
             (new Map\Builder($this))->make($mapContents);
         }
     }
     
+    /**
+     * 
+     * @return array
+     */
     public function getFields() {
         return $this->fields;
     }
@@ -114,9 +123,15 @@ class Map {
      * @throws Exception
      */
     public function addMapContent($key, $value) {
-        $this->{$key} = $value;        
+        if (!property_exists($this, $key)) {
+            throw new Exception('Invalid property: '. $key);
+        }
+        if(!$this->validator->checkMapContents($key, $value)) {
+            throw new Exception('The map has invalid field: ' . $key);
+        }
+        $this->{$key} = $value;
     }
-
+    
 
     /**
      * Converts map to array 
@@ -163,7 +178,7 @@ class Map {
     }
 
     /**
-     * 
+     * Converts array view of the map to JSON
      * @return string
      */
     public function toJson() {
@@ -171,13 +186,18 @@ class Map {
     }
 
     /**
-     * 
+     * Htturns JSON
      * @return string
      */
     public function __toString() {
         return $this->toJson();
     }
     
+    /**
+     * Creates a new structure from this
+     * @return Structure
+     * @throws Exception
+     */
     public function toStructure() {
         if (class_exists($this->type) && in_array(Structure::class, class_parents($this->type))) {
             $class = $this->type;

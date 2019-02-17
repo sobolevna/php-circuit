@@ -19,7 +19,7 @@
 
 namespace Circuit\Structure\Map;
 
-use Circuit\Structure;
+
 use Circuit\Structure\Map;
 use Circuit\Structure\Exception\Map as Exception;
 
@@ -35,29 +35,23 @@ class Builder {
      * @var Map
      */
     protected $map;
-    
+
     /**
      *
      * @var array
      */
     protected $mapFields = [];
-    
-    /**
-     *
-     * @var array
-     */
-    protected $allowedTypes = ['structure', 'element', 'connection', 'node', 'entryPoint', 'emptyField', 'process', 'state']; 
+
 
     public function __construct($map = null) {
         if ($map && $map instanceof Map) {
             $this->map = $map;
             $this->mapFields = $this->map->getFields();
-        }
-        else {
+        } else {
             $this->reset();
         }
     }
-    
+
     /**
      * 
      * @param string $mapClass
@@ -69,7 +63,7 @@ class Builder {
         }
         throw new Exception('Invalid map class');
     }
-    
+
     /**
      * 
      * @param mixed $mapContents
@@ -90,7 +84,6 @@ class Builder {
         return $map;
     }
 
-
     public function make($mapContents, $reset = true) {
         $map = $this->validatePrimarily($mapContents);
         foreach ($this->mapFields as $field) {
@@ -102,26 +95,10 @@ class Builder {
         $mapResult = $this->map;
         if ($reset) {
             $this->reset();
-        }        
+        }
         return $mapResult;
     }
-    
-    
-    /**
-     * 
-     * @param string $key
-     * @param mixed $value
-     * @return mixed
-     * @throws Exception
-     */
-    protected function checkMapContent($key, $value) {
-        $methodName = 'check' . ucfirst($key);
-        if (!method_exists($this, $methodName)) {
-            return true;
-        }
-        return $this->{$methodName}($value);
-    }
-    
+
     /**
      * 
      * @param string $key
@@ -130,9 +107,6 @@ class Builder {
      * @throws Exception
      */
     public function addMapContent($key, $value) {
-        if (!$this->checkMapContent($key, $value)) {
-            throw new Exception('The map has invalid field: ' . $key);
-        }
         $methodName = 'add' . ucfirst($key);
         if (!method_exists($this, $methodName)) {
             if (in_array($key, $this->mapFields)) {
@@ -144,91 +118,7 @@ class Builder {
             $this->map->addMapContent($key, $this->{$methodName}($value));
         }
     }
-    
-    
-    /**
-     * 
-     * @param mixed $id
-     * @return boolean
-     */
-    protected function checkId($id) {
-        if ($id && (is_string($id) || is_numeric($id))) {
-            return true;
-        }
-        return false;
-    }
 
-    /**
-     * 
-     * @param string $type
-     * @return boolean
-     */
-    protected function checkType($type) {
-        if (class_exists($type) && in_array(Structure::class, class_parents($type))) {
-            return true;
-        } elseif (in_array($type, $this->allowedTypes)) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * 
-     * @param array $elements
-     * @return boolean
-     */
-    protected function checkElements(array $elements) {
-        if (empty($elements)) {
-            return true;
-        }
-        $types = ['emptyFields', 'entryPoints', 'nodes'];
-        if (!($types == array_keys($elements))) {
-            return false;
-        }
-        foreach ($types as $type) {
-            if (!is_array($elements[$type])) {
-                return false;
-            }
-            if (!$this->checkElementsTypes($elements[$type])) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * 
-     * @param array $content
-     * @param array $necessaryFields
-     * @return boolean
-     */
-    protected function checkContentFields(array $content, array $necessaryFields) {
-        if (!($necessaryFields == array_keys($content))) {
-            return false;
-        }
-        if (!$this->checkId($content['id'])) {
-            return false;
-        }
-        if (!$this->checkType($content['type'])) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 
-     * @param array $elementsOfType
-     * @return boolean
-     */
-    protected function checkElementsTypes($elementsOfType) {
-        foreach ($elementsOfType as $element) {
-            if (!$this->checkContentFields($element, ['id', 'type'])) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
     /**
      * @todo make different builders for different types
      * @param type $map
@@ -236,7 +126,7 @@ class Builder {
      * @return type
      */
     protected function buildFromBuilder($map, $type = '') {
-        
+
         return (new self())->make($map);
     }
 
@@ -256,26 +146,6 @@ class Builder {
 
     /**
      * 
-     * @param array $connections
-     * @return boolean
-     */
-    protected function checkConnections(array $connections) {
-        if (empty($connections)) {
-            return true;
-        }
-        foreach ($connections as $connection) {
-            if (!$this->checkContentFields($connection, ['id', 'type', 'connected'])) {
-                return false;
-            }
-            if (empty($connection['connected'])) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * 
      * @param type $connections
      */
     protected function addConnections($connections) {
@@ -284,23 +154,6 @@ class Builder {
             $connections[] = $this->buildFromBuilder($connection, 'connection');
         }
         return $connectionsMap;
-    }
-
-    /**
-     * 
-     * @param array $processes
-     * @return boolean
-     */
-    protected function checkProcesses(array $processes) {
-        if (empty($processes)) {
-            return true;
-        }
-        foreach ($processes as $process) {
-            if (!$this->checkContentFields($process, ['id', 'type'])) {
-                return false;
-            }
-        }
-        return true;
     }
 
     protected function addProcesses($processes) {
@@ -313,23 +166,10 @@ class Builder {
 
     /**
      * 
-     * @param array|null $state
-     */
-    protected function checkState($state) {
-        if (empty($state)) {
-            return true;
-        }
-        if (!$this->checkContentFields($state, ['id', 'type'])) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 
      * @param array $state 
      */
     protected function addState($state) {
         return $this->buildFromBuilder($state, 'state');
     }
+
 }
