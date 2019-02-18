@@ -14,12 +14,13 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace Circuit\Structure;
 
 use Circuit\Structure;
+use Circuit\Structure\Element;
 use Circuit\Structure\Exception\Process as Exception;
 
 /**
@@ -37,15 +38,27 @@ abstract class Process extends Structure{
     
     /**
      * 
-     * @param Structure $structure
+     * @param Process|Element $structure
      * @param string $id
      */
-    public function append($structure) {
-        if (!($structure instanceof Structure)) {
-            throw new Exception('A part of the process must be a structure');
+    public function append(Structure $structure) {
+        if (!($structure instanceof Element || $structure instanceof Process)) {
+            throw new Exception('A part of the process must be either an element or a process');
         }
-        if (!$this->getById($structure->info()['id']) && $structure instanceof Element) {
-            parent::append($structure);
+        $id = $structure->info()['id'];
+        if (!$this->getById($id) && $structure instanceof Element) {
+            if ($structure instanceof EmptyField) {
+                $this->emptyFields[$id] = $structure;
+            } 
+            elseif ($structure instanceof EntryPoint) {
+                $this->entryPoints[$id] = $structure;
+            }
+            elseif ($structure instanceof Node) {
+                $this->nodes[$id] = $structure;
+            }
+            else {
+                throw new Exception('You can append to a structure only specified elements -- Nodes, Entry points or Empty Fields');
+            }
         }
         $this->processElements[] = $structure;
     } 
@@ -65,12 +78,10 @@ abstract class Process extends Structure{
      * @throws Exception
      */
     public function validate() {
-        $first = $this->getFirstElement();
-        if (!($first instanceof Element\EntryPoint && !($first instanceof Element\EntryPoint\Out))) {
+        if (!($this->getFirstElement()->info('isIn'))) {
             throw Exception('The first element must be an EntryPoint to enter');
         }    
-        $last = $this->getLastElement();
-        if (!($last instanceof Element\EntryPoint && !($last instanceof Element\EntryPoint\In))) {
+        if (!($this->getLastElement()->info('isOut'))) {
             throw Exception('The last element must be an EntryPoint to exit');
         }
         return true;
@@ -79,7 +90,13 @@ abstract class Process extends Structure{
 
     abstract protected function run($state = null);
 
+    /**
+     * @return Element The first element of the process
+     */
     abstract public function getFirstElement();
     
+    /**
+     * @return Element The last element of the process
+     */
     abstract public function getLastElement();
 }

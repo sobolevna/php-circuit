@@ -33,9 +33,9 @@ class Element extends Structure {
     
     /**
      *
-     * @var Structure 
+     * @var mixed 
      */
-    protected $instance = null; 
+    protected $handler = null; 
     
     /**
      *
@@ -44,22 +44,16 @@ class Element extends Structure {
     protected $isSimple = null; 
     
     protected $elementConnections;
-
+    
     /**
-     * 
-     * @param mixed $instance
-     * @param array $map
+     *
+     * @var Structure
      */
-    public function __construct($instance = null, array $map = null) {
-        if (!$instance || !($instance instanceof Structure)) {
-            parent::__construct($instance, $map);     
-        }
-        elseif (is_object($instance) && $instance instanceof Structure) {
-            $this->instance = $instance;     
-            $this->builder = $instance->builder(); 
-            $this->fromMap($instance->getMap());
-            $this->id = $instance->info()['id'];
-        }   
+    protected $parent;
+    
+    public function __construct($id = '', $map = null, $parent = null) {
+        parent::__construct($id, $map);
+        $this->parent = $parent;
     }
     
     /**
@@ -82,27 +76,13 @@ class Element extends Structure {
         if ($state && !($state instanceof State)) {
             throw new Exception('You should process either a state ot nothing');
         }
-        if ($this->instance) {
-            return $this->instance->process($state);
-        }
         elseif(!$this->isSimple()) {
             return parent::process($state);
         }
         else {
-            return $this->doProcess($state);
+            return $this->handler->process($state);
         }
-    }
-    
-    /**
-     * The real processor function for a simple element. 
-     * Do anything you want with the state. 
-     * Don't forget to return a state!
-     * @param State $state
-     * @return State
-     */
-    protected function doProcess($state) {
-        return $state;
-    }
+    }    
     
     /**
      * 
@@ -129,23 +109,28 @@ class Element extends Structure {
      * @return \Circuit\Structure\Element\Node
      */
     public function toNode() {
-        return new Node($this);
+        return new Node($this->id, $this->map);
     }
     
     public function toEntryPoint() {
-        return new EntryPoint($this);
+        return new EntryPoint($this->id, $this->map);
     }
     
     public function toEmptyField() {
-        return new EmptyField($this);
+        return new EmptyField($this->id, $this->map);
     }
     
     /**
      * 
      * @return Structure
      */
-    public function instance() {
-        return $this->instance;
+    public function setHandler($handler) {
+        if ($handler) {
+            $this->handler = $handler;
+        }
+        else {
+            $this->handler = null;
+        }
     }
     
     public function isSimple() {

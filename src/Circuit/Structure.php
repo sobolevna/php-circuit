@@ -20,7 +20,7 @@
 namespace Circuit;
 
 use Circuit\Structure\Exception;
-use Circuit\Structure\{Builder,State,Element, Connection};
+use Circuit\Structure\{Builder,State,Element, Connection, Map};
 use Circuit\Structure\Element\{Node, EmptyField, EntryPoint};
 
 /**
@@ -85,9 +85,15 @@ class Structure {
      *
      * @var Process[]
      */
-    protected $processes = [];
+    protected $processes = []; 
+    
+    /**
+     *
+     * @var boolean 
+     */    
+    protected $isSimple;
 
-    public function __construct($id = '', array $map = null) {
+    public function __construct($id = '', Map $map = null) {
         $this->id = $this->setId($id);
         $this->buildBuilder();
         if (!empty($map)) {
@@ -194,7 +200,7 @@ class Structure {
     public function getMap($toJson = false, $force = false) {
         $this->map = !$this->map || $force ? $this->toMap() : $this->map;   
         return $toJson ? json_encode($this->map) : $this->map; 
-    }
+    }    
     
     /**
      * Recursively converts a structure to a map
@@ -203,12 +209,6 @@ class Structure {
     protected function toMap() {
         $map = [
             'id' => $this->id,
-            'elements' => [
-                'nodes' => [],
-                'emptyFields' => [],
-                'entryPoints' => []
-            ], 
-            'connections' => [],
             'state' => $this->state ? $this->state->getMap() : '',
             'instance' => get_class($this),
             'processes' => []
@@ -220,6 +220,9 @@ class Structure {
         }
         foreach ($this->connections as $connection) {
             $map['connections'][] = $connection->getMap();
+        }
+        foreach ($this->processes as $process) {
+            $map['processes'][] = $process->getMap();
         }
         return $map;
     }
@@ -242,44 +245,6 @@ class Structure {
         return $this->state = new State($ret);
     }
     
-    /**
-     * 
-     * @return Element
-     */
-    public function element() {
-        if (!$this->element) {
-            $this->element = new Element($this);
-        }
-        return $this->element;
-    }
-    
-    /**
-     * Inserts a structure to an empty field
-     * @param EmptyField $emptyField
-     * @param EntryPoint[] $sourceEntryPoints
-     * @param EntryPoint[] $targetEntryPoints
-     * @param array $connectionInterfaceMap 
-     * @return bool
-     */
-    public function insertTo($emptyField, array $sourceEntryPoints = null, array $targetEntryPoints = null, array $connectionInterfaceMap = null) {
-        try {
-            $sourceEP = empty($sourceEntryPoints) ? $this->entryPoints() : $sourceEntryPoints;
-            $targetEP = empty($targetEntryPoints) ? $emptyField->internalEntryPoints() : $targetEntryPoints; 
-            $map = $this->connectionInterfaceMap($sourceEntryPoints, $connectionInterfaceMap);
-            foreach ($sourceEP as $key => $ep) {
-                $ret = $ep->connectExternal($targetEP[$key], $map[$key]);
-                if (!$ret) {
-                    return false;
-                }
-            }
-            return true;
-        } catch (Exception $ex) {
-            echo $ex->getMessage();
-            return false;
-        }
-       
-    }
-    
     public function entryPoints() {
         return $this->entryPoints;
     }
@@ -292,38 +257,19 @@ class Structure {
         return $this->state;
     }
     
-    public function connect($connectWith, array $connectionMap = null, $id = '') {
-        return $this->builder->connection($this, $connectWith, $connectionMap, $id);
-    }
-    
-    public function info() {
-        return ['id'=> $this->id];
+    public function info($key = null) {
+        $info = $this->getInfo();
+        if ($key && !empty($info[$key])) {
+            return $info[$key];
+        }
+        if ($key && empty($info[$key])) {
+            return false;
+        }
+        return $info;
     }    
     
-    /**
-     * Addends element to the structure 
-     * @todo How do we append it with its all connections?
-     * @param EmptyField|EntryPoint|Node $element
-     * @param string $id
-     * @throws Exception
-     */
-    public function append($element, $id = '') {
-        $elementId = $id ? $id : $element->info()['id'];
-        if ($this->getById($elementId)) {
-            throw new Exception('Element with this id already exists in the structure.');
-        }
-        if ($element instanceof EmptyField) {
-            $this->emptyFields[$elementId] = $element;
-        } 
-        elseif ($element instanceof EntryPoint) {
-            $this->entryPoints[$elementId] = $element;
-        }
-        elseif ($element instanceof Node) {
-            $this->nodes[$elementId] = $element;
-        }
-        else {
-            throw new Exception('You can append to a structure only specified elements -- Nodes, Entry points or Empty Fields');
-        }
+    protected function getInfo() {
+        return ['id'=> $this->id];
     }
     
     /**
@@ -349,6 +295,21 @@ class Structure {
             return $this->processes[$id];
         }        
         return null;
+    }
+    
+    public function isSimple() {
+        if (!($this->isSimple === null)) {
+            return $this->isSimple;
+        }
+        foreach (['nodes', 'entryPoints', 'emptyFields'] as $elementType) {
+            foreach ($this->{$elementType} as $element) {
+                if(!($element->isSimple())) {
+                    $this->isSimple = false;
+                    return false;
+                }
+            }
+        }
+        return true;
     }
         
 }

@@ -103,4 +103,14 @@ class EntryPoint extends Element {
     public function toEntryPoint() {
         return $this;
     }
+    
+    protected function getInfo() {
+        return [
+            'id' => $this->id,
+            'connectionInterface' => $this->connectionInterface,
+            'stateType' => $this->stateType,
+            'isIn' => true,
+            'isOut' => true
+        ];
+    }
 }

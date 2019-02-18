@@ -26,6 +26,15 @@ use Circuit\Structure\Element\EntryPoint;
  *
  * @author sobolevna
  */
-class In extends EntryPoint {
+class In extends EntryPoint {    
         
+    protected function getInfo() {
+        return [
+            'id' => $this->id,
+            'connectionInterface' => $this->connectionInterface,
+            'stateType' => $this->stateType,
+            'isIn' => true,
+            'isOut' => false
+        ];
+    }
 }
