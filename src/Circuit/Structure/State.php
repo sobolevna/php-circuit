@@ -27,63 +27,37 @@ use Circuit\Structure;
  * @author sobolevna
  */
 class State extends Structure {
-    
-    protected $value;
-    
-    /**
-     *
-     * @var Structure 
-     */
-    protected $instance; 
-    
-    public $path;
 
+    protected $value;
+    public $path;
     public $from;
 
     public function __construct($value = null, $id = '', $map = null) {
         parent::__construct($id, $map);
         $this->value = $value instanceof State ? $value->value() : $value;
     }
-    
-        
-    /**
-     * 
-     * @param mixed $id
-     * @return string
-     * @throws Exception
-     */
-    protected function setId($id) {
-        if (is_string($id) || is_numeric($id)) {
-            return $id;
-        }
-        elseif (!$id) {
-            return self::class.'_'.time();
-        }
-        else {
-            throw new Exception('Invalid id');
-        }
-    }
-    
+
     public function value() {
         return $this->value;
     }
-    
+
     public function getState() {
         return $this;
     }
-    
+
     protected function toMap() {
         $map = [
             'id' => $this->id,
             'value' => \serialize($this->value),
             'instance' => self::class,
-            'map' => $this->instance ? $this->instance->getMap(false) : ''
+            'map' => $this->getMap(false)
         ];
         return $map;
     }
-    
+
     protected function fromMap($structureMap) {
         parent::fromMap($structureMap);
         $this->value = unserialize($this->map['value']);
     }
+
 }

@@ -35,7 +35,7 @@ class Structure {
     
     /**
      * A map from which the structure was built
-     * @var array 
+     * @var Map 
      */
     protected $map;
 
@@ -172,8 +172,7 @@ class Structure {
                 continue;
             }
             foreach ($map['elements'][$array] as $elementMap) {
-                $el =  $this->builder->fromMap($elementMap, $type); 
-                $this->{$array}[$el->info()['id']] = $el;
+                $this->{$array}[$elementMap['id']] = $this->builder->fromMap($elementMap, $type); 
             }
         }
         foreach ($map['connections'] as $conn) {
@@ -198,31 +197,31 @@ class Structure {
      * @return array|string
      */
     public function getMap($toJson = false, $force = false) {
-        $this->map = !$this->map || $force ? $this->toMap() : $this->map;   
-        return $toJson ? json_encode($this->map) : $this->map; 
+        $this->map = !$this->map || $force ? $this->toMap($force) : $this->map;   
+        return $toJson ? $this->map->toJson() : $this->map; 
     }    
     
     /**
      * Recursively converts a structure to a map
      * @return array
      */
-    protected function toMap() {
+    protected function toMap($force = false) {
         $map = [
             'id' => $this->id,
-            'state' => $this->state ? $this->state->getMap() : '',
+            'state' => $this->state ? $this->state->getMap(false, $force) : '',
             'instance' => get_class($this),
             'processes' => []
         ];
         foreach (['nodes', 'emptyFields', 'entryPoints'] as $type) {
             foreach ($this->$type as $element) {
-                $map['elements'][$type][] = $element->getMap();
+                $map['elements'][$type][] = $element->getMap(false, $force);
             }
         }
         foreach ($this->connections as $connection) {
-            $map['connections'][] = $connection->getMap();
+            $map['connections'][] = $connection->getMap(false, $force);
         }
         foreach ($this->processes as $process) {
-            $map['processes'][] = $process->getMap();
+            $map['processes'][] = $process->getMap(false, $force);
         }
         return $map;
     }
@@ -243,10 +242,6 @@ class Structure {
             $ret[] = $currentState->value();
         }
         return $this->state = new State($ret);
-    }
-    
-    public function entryPoints() {
-        return $this->entryPoints;
     }
     
     /**
