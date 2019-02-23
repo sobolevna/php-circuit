@@ -53,6 +53,12 @@ class Map {
 
     /**
      *
+     * @var string
+     */
+    protected $class;
+
+    /**
+     *
      * @var array
      */
     protected $elements = [];
@@ -79,7 +85,7 @@ class Map {
      *
      * @var array
      */
-    protected $fields = ['id', 'type', 'elements', 'connections', 'processes', 'state']; 
+    protected $fields = ['id', 'type', 'class','elements', 'connections', 'processes', 'state']; 
     
     /**
      *
@@ -199,8 +205,8 @@ class Map {
      * @throws Exception
      */
     public function toStructure() {
-        if (class_exists($this->type) && in_array(Structure::class, class_parents($this->type))) {
-            $class = $this->type;
+        if ($this->class) {
+            $class = $this->class;
             return new $class($this->id, $this);
         }
         if (!empty($this->defaultClasses[$this->type])) {
@@ -208,6 +214,10 @@ class Map {
             return new $class($this->id, $this);
         } 
         throw new Exception('Invalid structure type: '.$this->type);
+    }
+    
+    public function getById($id) {
+        
     }
 
 }

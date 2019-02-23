@@ -137,11 +137,11 @@ class Connection extends Structure {
     
     /**
      * Converts connection to map
-     * @param bool $toJson
-     * @return array|string
+     * @param boolean $forse
+     * @return array 
      */
-    protected function toMap() {
-        $map = parent::toMap(false);
+    protected function toMap($forse = false) {
+        $map = parent::toMap($forse);
         $map['connected'] = \array_keys($this->connected);
         return $map;
     }

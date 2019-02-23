@@ -30,7 +30,15 @@ use Circuit\Structure\Element\{Node, EmptyField, EntryPoint};
  */
 class Structure {
     
+    /**
+     * 
+     */
+    const ELEMENT_TYPES = ['node', 'entryPoint', 'emptyField'];
     
+    /**
+     *
+     * @var string|number
+     */
     protected $id;
     
     /**
@@ -91,7 +99,13 @@ class Structure {
      *
      * @var boolean 
      */    
-    protected $isSimple;
+    protected $isSimple; 
+    
+    /**
+     *
+     * @var string 
+     */
+    protected $type = 'structure';
 
     public function __construct($id = '', Map $map = null) {
         $this->id = $this->setId($id);
@@ -165,8 +179,7 @@ class Structure {
     protected function fromMap($structureMap) {
         $map = $this->checkAndGetStructureMap($structureMap);  
         $this->map = $map;
-        $types = ['node', 'emptyField', 'entryPoint'];
-        foreach ($types as $type) {
+        foreach (self::ELEMENT_TYPES as $type) {
             $array = $type.'s';
             if (empty($map['elements'][$array])) {
                 continue;
@@ -209,12 +222,13 @@ class Structure {
         $map = [
             'id' => $this->id,
             'state' => $this->state ? $this->state->getMap(false, $force) : '',
-            'instance' => get_class($this),
+            'type' => $this->type,
+            'class' => get_class($this),
             'processes' => []
         ];
-        foreach (['nodes', 'emptyFields', 'entryPoints'] as $type) {
-            foreach ($this->$type as $element) {
-                $map['elements'][$type][] = $element->getMap(false, $force);
+        foreach (self::ELEMENT_TYPES as $type) {
+            foreach ($this->{$type.'s'} as $element) {
+                $map['elements'][$type.'s'][] = $element->getMap(false, $force);
             }
         }
         foreach ($this->connections as $connection) {
@@ -274,14 +288,10 @@ class Structure {
      * @return Structure
      */
     public function getById($id) {
-        if (!empty($this->nodes[$id])) {
-            return $this->nodes[$id];
-        }
-        if (!empty($this->emptyFields[$id])) {
-            return $this->emptyFields[$id];
-        }
-        if (!empty($this->entryPoints[$id])) {
-            return $this->entryPoints[$id];
+        foreach (self::ELEMENT_TYPES as $elementType) {
+            if (!empty($this->{$elementType.'s'}[$id])) {
+                return $this->{$elementType.'s'}[$id];
+            }
         }
         if (!empty($this->connections[$id])) {
             return $this->connections[$id];
@@ -296,8 +306,8 @@ class Structure {
         if (!($this->isSimple === null)) {
             return $this->isSimple;
         }
-        foreach (['nodes', 'entryPoints', 'emptyFields'] as $elementType) {
-            foreach ($this->{$elementType} as $element) {
+        foreach (self::ELEMENT_TYPES as $elementType) {
+            foreach ($this->{$elementType.'s'} as $element) {
                 if(!($element->isSimple())) {
                     $this->isSimple = false;
                     return false;

@@ -12,11 +12,15 @@ $node2->connect($entryPoint2);
 $node1->connect($node2);
 
 $emptyField1->connect($node1);
+$emptyField1->connect($node2);
 
-$map = $emptyField1->formStructure(); 
-
+$map = $emptyField1->formStructure();
+print_r($map);
+die();
 $structure = new \Circuit\Structure('s1', $map);
 
+//print_r($structure->getMap());
+//die();
 $structure->process();
 
 print_r($structure->getMap()['processes']);

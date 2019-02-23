@@ -148,7 +148,7 @@ class Element extends Structure {
         $map = [
             'elements'=>[],
             'connections'=>[]
-        ];
+        ];        
         if ($this instanceof Node) {
             $map['elements']['nodes'][] = $this->getMap();
         }
@@ -181,18 +181,20 @@ class Element extends Structure {
      * @param array $from
      * @return mixed
      */
-    public function formStructure($justMap = true, $useExternal = false, $useEmptyFields = false, $from = []) {
-        $from[] = $this->id;
-        $map = $this->prepareMap();
-        foreach ($this->elementConnections as $conn) {            
-            $element = $conn->getThrough($this->id);
-            if (!$element || in_array($element->info()['id'], $from)) {
+    public function formStructure($justMap = true, $content = ['elements'=>[], 'connections'=>[]]) {        
+        if (!empty($content['elements'][$this->id])) {
+            return $content;
+        }
+        $mapContent = $content[$this->id] = $this->getMap();
+        foreach ($this->elementConnections as $conn) {
+            if (!empty($content['connections'][$conn->info('id')])) {
                 continue;
             }
-            $map['connections'][] = $conn->getMap();
-            $map = array_merge_recursive($map, $element->formStructure($justMap, $useExternal, $useEmptyFields, $from));
+            $mapContent[$conn->info('id')] = $conn->getMap();
+            $element = $conn->getThrough($this->id);
+            $mapContent = array_merge($mapContent, $element->formStructure($justMap, $content));
         }        
-        $correctMap = $this->correctMap($map);
+        
         return $justMap || count($from)> 0 ? $correctMap : new Structure('', $correctMap);
     }
     
@@ -203,7 +205,7 @@ class Element extends Structure {
      * @throws Exception
      */
     public function bindConnection($connection) {
-        $id = $connection->info()['id'];    
+        $id = $connection->info('id');    
         if (!empty($this->elementConnections[$id])) {
             throw new Exception('This connection already exists.');
         }
@@ -212,13 +214,5 @@ class Element extends Structure {
         }
         $this->elementConnections[$id] = $connection;
         return true;
-    }
-    
-    /**
-     * 
-     * @return $this
-     */
-    public function element() {
-        return $this;
     }
 }

@@ -92,6 +92,11 @@ class Builder {
             }
             $this->addMapContent($field, $map[$field]);
         }
+        return $this->getMap($reset);
+        
+    }
+    
+    public function getMap($reset = true) {
         $mapResult = $this->map;
         if ($reset) {
             $this->reset();
@@ -114,9 +119,21 @@ class Builder {
             } else {
                 throw new Exception('There is no such a property: ' . $key);
             }
-        } else {
+        } 
+        elseif (!$key || $key == 'unclassified') {
+            $contentType = $this->classifyContent($value);
+            $this->addMapContent($contentType, $value);
+        }
+        else {
             $this->map->addMapContent($key, $this->{$methodName}($value));
         }
+    }
+    
+    protected function classifyContent($content) {
+        if (empty($content['type'])) {
+            throw new Exception('No content type specified');
+        }
+        return $content['type'];
     }
 
     /**

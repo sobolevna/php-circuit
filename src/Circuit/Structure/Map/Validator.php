@@ -66,10 +66,13 @@ class Validator {
      * @return boolean
      */
     protected function checkId($id) {
-        if ($id && (is_string($id) || is_numeric($id))) {
-            return true;
+        if (!($id && (is_string($id) || is_numeric($id)))) {
+            return false;
         }
-        return false;
+        if ($this->map->getById($id)) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -78,9 +81,14 @@ class Validator {
      * @return boolean
      */
     protected function checkType($type) {
-        if (class_exists($type) && in_array(Structure::class, class_parents($type))) {
+         if (in_array($type, $this->allowedTypes)) {
             return true;
-        } elseif (in_array($type, $this->allowedTypes)) {
+        }
+        return false;
+    }
+    
+    protected function checkClass($class) {
+        if (class_exists($class) && in_array(Structure::class, class_parents($class))) {
             return true;
         }
         return false;
