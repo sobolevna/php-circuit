@@ -19,10 +19,13 @@
 
 namespace Circuit\Interfaces\Element;
 
+use Circuit\Interfaces\{Element, Connection};
+
 /**
  *
  * @author sobolevna
  */
-interface Node {
-    //put your code here
+interface Node extends Element {
+    
+    public function connect(Element $element) : Connection;
 }

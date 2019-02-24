@@ -24,5 +24,6 @@ namespace Circuit\Interfaces;
  * @author sobolevna
  */
 interface State {
-    //put your code here
+    
+    public function value();
 }

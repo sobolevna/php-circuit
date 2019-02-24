@@ -24,5 +24,8 @@ namespace Circuit\Interfaces;
  * @author sobolevna
  */
 interface Processor {
-    //put your code here
+    
+    public function process(State $state = null) : State;
+    
+    public function getState() : State;
 }

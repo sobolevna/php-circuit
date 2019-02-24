@@ -18,11 +18,16 @@
  */
 
 namespace Circuit\Interfaces\Element;
+use Circuit\Interfaces\Element;
+use Circuit\Interfaces\Connection;
 
 /**
  *
  * @author sobolevna
  */
-interface EntryPoint {
-    //put your code here
+interface EntryPoint extends Element{
+    
+    public function connect(Node $node) : Connection;
+    
+    public function connectExternal(EntryPoint $entryPoint) : Connection;
 }

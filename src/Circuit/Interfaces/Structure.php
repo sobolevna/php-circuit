@@ -25,5 +25,16 @@ namespace Circuit\Interfaces;
  * @author sobolevna
  */
 interface Structure {
-    //put your code here
+    
+    /**
+     * 
+     * @param string $id
+     * @return Element Description
+     */
+    public function getElementById(string $id) : Element; 
+    
+    /**
+     * @return Element[] Description
+     */
+    public function getElements() : array;
 }

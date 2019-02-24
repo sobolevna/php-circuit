@@ -18,11 +18,13 @@
  */
 
 namespace Circuit\Interfaces\Element;
+use Circuit\Interfaces\{Element, Connection};
 
 /**
  *
  * @author sobolevna
  */
-interface EmptyField {
-    //put your code here
+interface EmptyField extends Element{
+    
+    public function connect(Node $node) : Connection;
 }

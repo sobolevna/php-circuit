@@ -24,5 +24,7 @@ namespace Circuit\Interfaces;
  * @author sobolevna
  */
 interface Element {
-    //put your code here
+    
+    public function bindConnection(Connection $connection);     
+    
 }

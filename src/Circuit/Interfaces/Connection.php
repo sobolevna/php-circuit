@@ -24,5 +24,6 @@ namespace Circuit\Interfaces;
  * @author sobolevna
  */
 interface Connection {
-    //put your code here
+    
+    public function getThrough(Element $element) : Element;
 }
