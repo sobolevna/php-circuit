@@ -27,9 +27,42 @@ use Circuit\Interfaces\{Element, Connection};
  * @author sobolevna
  */
 class Element implements Element{
+    
+    protected $id;
+    
+    protected $value; 
+    
+    protected $elementConnections = [];
+    
+    protected $structure;
+    
+    public function __construct($id, $value) {
+        $this->id = $id;
+        $this->value = $value;
+    }
         
     public function bindConnection(Connection $connection) {
         $this->elementConnections[] = $connection;
+    }
+    
+    public function id() {
+        return $this->id;
+    }
+    
+    public function value() {
+        return $this->value;
+    }
+    
+    public function setStructure(Structure $structure) {
+        $this->structure = $structure;
+    }
+    
+    public function unsetStructure() {
+        unset($this->structure);
+    }
+    
+    public function structure() {
+        return $this->structure;
     }
 
 }

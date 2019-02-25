@@ -26,11 +26,49 @@ use Circuit\Interfaces;
  *
  * @author sobolevna
  */
-class Connection implements Connection{
+class Connection implements Interfaces\Connection{
     
+    /**
+     *
+     * @var Element[] 
+     */
+    protected $connected = [];
     
+    /**
+     * 
+     * @param Element[] $connected
+     * @param string $id
+     * @throws Exception
+     */
+    public function __construct(array $connected, $id) {
+        $this->id = $id;
+        foreach ($connected as $element) {
+            if(!($element instanceof Interfaces\Element)) {
+                throw new Exception('A connection is used to connect elements');
+            }
+            $element->bindConnection($this);
+        }
+        $this->connected = $connected;
+    }
+    
+    public function id() {
+        return $this->id;
+    }
+
     public function getThrough(Interfaces\Element $element): Interfaces\Element {
-        
+        foreach ($this->connected as $connectedElement) {
+            if ($connectedElement == $element) {
+                continue;
+            }
+            return $connectedElement;
+        }
+    }
+    
+    public function hasConnected(Interfaces\Element $element) {
+        if (in_array($element, $this->connected)) {
+            return true;
+        }
+        return false;
     }
 
 }

@@ -31,8 +31,6 @@ class Structure implements Interfaces\Structure{
     protected $elements = []; 
     
     protected $connections = [];
-
-    protected $map = null; 
     
     protected $id;
     
@@ -65,6 +63,10 @@ class Structure implements Interfaces\Structure{
      */
     public function getElements() {
         return $this->elements;
+    } 
+    
+    public function id() {
+        return $this->id;
     }
     
     public function addElement(Element $element, $overrideIfExists = false) {
@@ -75,9 +77,18 @@ class Structure implements Interfaces\Structure{
             throw new Exception('The element already exists');
         }
         $this->elements[$element->getId()] = $element;
+        $element->setStructure($this);
     } 
     
-    public function addConnection(Connection $connection) {
+    public function removeElement($elementId) {
+        if (empty($this->elements[$elementId])) {
+            throw new Exception('There is no such an element');
+        }
+        $this->elements[$elementId]->unsetStructure();
+        unset($this->elements[$elementId]);
+    }
+    
+    public function addConnection(Connection $connection, $overrideIfExists = false) {
         if (!$connection) {
             throw new Exception('The connection is null');
         }
@@ -85,6 +96,67 @@ class Structure implements Interfaces\Structure{
             throw new Exception('The connection already exists');
         }
         $this->connections[$connection->getId()] = $connection;
+    }
+    
+    public function removeConnection($connectionId) {
+        if (empty($this->connections[$connectionId])) {
+            throw new Exception('There is no such a connection');
+        }
+        $this->connections[$connectionId];
+        unset($this->elements[$connectionId]);
+    }
+    
+    public function validate() {
+        foreach ($this->elements as $element) {
+            $this->checkElementType($element);
+            $this->checkConnectionsWithElement($element);
+        }
+        foreach ($this->connections as $connection) {
+            $this->checkElementsWithConnection($connection);
+        }
+    } 
+    
+    protected function checkElementType(Interfaces\Element $element) {
+        if ($element instanceof Interfaces\Element\Node) {
+            return true;
+        }
+        if ($element instanceof Interfaces\Element\EmptyField) {
+            return true;
+        }
+        if ($element instanceof Interfaces\Element\EntryPoint) {
+            return true;
+        }
+        throw new Exception('Invalid type of the element with id: '.$element->id());
+    }
+    
+    protected function checkConnectionsWithElement(Interfaces\Element $element) {
+        $inConnection = false;
+        $hasConnectepPair = false;
+        foreach ($this->connections as  $connection) {
+            if (!$connection->hasConnected($element)) {
+                continue;
+            }
+            $inConnection = true;
+            $pair = $connection->getThrough($element);
+            $hasConnectepPair = $this->checkConnectionsWithElement($pair);
+            break;
+        }
+        if (!$inConnection) {
+            throw new Exception('The following element has no connections: '.$element->id());
+        }
+        if (!$hasConnectepPair) {
+            throw new Exception('The following element has no connected pair: '.$element->id());
+        }
+        return true;
+    } 
+    
+    protected function checkElementsWithConnection($connection) {
+        foreach ($this->elements as $element) {
+            if ($connection->hasConnected($element)) {
+                return true;
+            }
+        }
+        throw new Exception('The following connection is not used: '.$connection->id());
     }
     
 }
