@@ -1,26 +1,6 @@
 <?php
 require './vendor/autoload.php';
 
-$node1 = new \Circuit\Structure\Element\Node('n1');
-$node2 = new \Circuit\Structure\Element\Node('n2');
-$entryPoint1 = new \Circuit\Structure\Element\EntryPoint('ep1');
-$entryPoint2 = new \Circuit\Structure\Element\EntryPoint('ep2');
-$emptyField1 = new \Circuit\Structure\Element\EmptyField('ef1');
-
-$node1->connect($entryPoint1);
-$node2->connect($entryPoint2);
-$node1->connect($node2);
-
-$emptyField1->connect($node1);
-$emptyField1->connect($node2);
-
-$map = $emptyField1->formStructure();
-print_r($map);
-die();
-$structure = new \Circuit\Structure('s1', $map);
-
-//print_r($structure->getMap());
-//die();
-$structure->process();
-
-print_r($structure->getMap()['processes']);
+$builder = new Circuit\Implementation\Map\Builder(); 
+$map = $builder->make(file_get_contents('./src/Circuit/examples/AP.json'));
+var_dump($map->toJson());

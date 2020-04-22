@@ -25,5 +25,7 @@ namespace Circuit\Interfaces;
  */
 interface Connection {
     
-    public function getThrough(Element $element) : Element;
+    public function getThrough(Element $element) : Element; 
+    
+    public function hasConnected(Element $element): boolean;
 }

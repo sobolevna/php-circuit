@@ -27,4 +27,6 @@ interface Element {
     
     public function bindConnection(Connection $connection);     
     
+    public function id();
+    
 }

@@ -58,10 +58,9 @@ class Builder {
         if (class_exists($mapClass) && ($mapClass == Map::class || in_array(Map::class, class_parents($mapClass)))) {
             $this->map = new $mapClass();
             $this->mapFields = $this->map->getFields();
-        }
-        else {
+        } else {
             throw new Exception('Invalid map class');
-        }         
+        }
     }
 
     /**

@@ -129,8 +129,14 @@ class Map {
     public function toArray() {
         $map = [];
         foreach ($this->fields as $field) {
-            if (!is_array($this->{$field})) {
+            if ($field != 'value' && empty($this->{$field})) {
+                continue;
+            }
+            if ($this->{$field} instanceof Map) {
                 $map[$field] = $this->{$field}->toArray();
+            }
+            elseif (!is_array($this->{$field})) {
+                $map[$field] = $this->{$field};
             } else {
                 $map[$field] = $this->arrayFieldToArrayMap($this->{$field});
             }
@@ -146,7 +152,15 @@ class Map {
     protected function arrayFieldToArrayMap($field) {
         $map = [];
         foreach ($field as $value) {
-            $map[] = $value->toArray();
+            if (empty($value)) {
+                continue;
+            }
+            if ($value instanceof Map) {
+                $map[] = $value->toArray();
+            }
+            else {
+                $map[] = $value;
+            }
         }
         return $map;
     }
