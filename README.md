@@ -17,14 +17,17 @@ StructuredElement: Element that extends StructuredEntity
 StructuredConnection: connection that can connect StructuredElements. It contains connection between EntryPoints. Only EntryPoints with the same type (or if one type extends another) can be connected
 ComplexEntity: StructuredEntity with more than 3 elements
 ComplexElement: Element that extends ComplexEntity 
-ComplexConnection: connection that can connect ComplexElements. It tries to connect every EntryPoint of each ComplexElement with another one's using rules of StructuredConnection
+ComplexConnection: connection that can connect ComplexElements. It tries to connect every EntryPoint of each ComplexElement with another one's using rules of StructuredConnection 
+State: remembers previous State
+Handler: gets a State and returns next one
+Process: has a State and uses Handlers 
+...
+ComplexState is an Element
+ComplexHandler is a Connection
 Container: can contain any object and use it 
-Processor: can handle Processable 
-Process: structured dataflow 
 Circuit: implements all of it 
 
 Problems: 
-* Structure Building 
 * Processes 
 * Element accessing 
 * Practical usage 
