@@ -27,5 +27,5 @@ use Circuit\Interfaces\{Element, Connection};
  */
 interface Node extends Element {
     
-    public function connect(Element $element) : Connection;
+    
 }

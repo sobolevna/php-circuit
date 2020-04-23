@@ -26,5 +26,5 @@ use Circuit\Interfaces\{Element, Connection};
  */
 interface EmptyField extends Element{
     
-    public function connect(Node $node) : Connection;
+    
 }

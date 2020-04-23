@@ -27,7 +27,4 @@ use Circuit\Interfaces\Connection;
  */
 interface EntryPoint extends Element{
     
-    public function connect(Node $node) : Connection;
-    
-    public function connectExternal(EntryPoint $entryPoint) : Connection;
 }
