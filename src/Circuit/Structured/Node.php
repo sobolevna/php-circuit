@@ -1,8 +1,9 @@
 <?php
 
-namespace Circuit\Implementation\Basic; 
+namespace Circuit\Basic; 
 
 use Circuit\Interfaces;
+use Circuit\Basic\Element;
 use Circuit\Exceptions\ElementConnectionException;
 
 class Node extends Element implements Interfaces\Core, Interfaces\Element\Node {

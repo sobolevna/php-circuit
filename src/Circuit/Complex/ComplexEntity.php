@@ -1,10 +1,12 @@
 <?php
 
-namespace Circuit\Implementation\Basic;
+namespace Circuit\Basic;
 
 use Circuit\Interfaces;
 use Circuit\Interfaces\Element;
 use Circuit\Traits\IsStructured;
+use Circuit\Structured\StructuredEntity;
+use Circcuit\Exceptions\ElementTypeException;
 
 class ComplexEntity extends StructuredEntity {
 

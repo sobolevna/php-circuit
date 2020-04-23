@@ -1,9 +1,10 @@
 <?php
 
-namespace Circuit\Implementation\Basic; 
+namespace Circuit\Basic; 
 
 use Circuit\Interfaces;
 use Circuit\Traits\IsStructured;
+use Circuit\Basic\Connection;
 use Circuit\Exceptions\EntryPointConnectionException;
 
 class StructuredConnection extends Connection implements Interfaces\Structure {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Circuit\Implementation\Basic; 
+namespace Circuit\Basic; 
 
 use Circuit\Interfaces;
 use Circuit\Traits\{HasDescription, IsStructured};

@@ -1,9 +1,10 @@
 <?php
 
-namespace Circuit\Implementation\Basic;
+namespace Circuit\Basic;
 
 use Circuit\Interfaces;
 use Circuit\Interfaces\Element;
+use Circuit\Basic\Entity;
 use Circuit\Traits\IsStructured;
 
 class StructuredEntity extends Entity implements Interfaces\Structure, Interfaces\Entity {
