@@ -2,30 +2,24 @@
 
 namespace Circuit\Basic; 
 
-use Circuit\Interfaces;
-use Circuit\Traits\HasDescription;
+use Circuit\Interfaces\Element;
+use Circuit\Traits\{HasDescription, IsConnection};
 
 class Connection implements Interfaces\Connection, Interfaces\Descriptable {
 
-    use HasDescription;
+    use HasDescription, IsConnection;
 
     /**
      * @property  string 
      */
     protected $description = 'Basic connection';
-    /**
-     * @propery Element[] $elements
-     */
-    protected $elements = [];
-
+    
     /**
      * @param Element[] $elements
      */
     public function __construct(array $elements) {
         $this->elements = $elements;
+        $this->addConnectionToElements($elements);
     }
-
-    public function getElements() : array {
-        return $this->elements;
-    }
+    
 }

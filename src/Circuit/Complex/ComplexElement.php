@@ -12,7 +12,5 @@ class ComplexElement extends ComplexEntity implements Interfaces\Element{
 
     protected $description = 'Element based on complex entity';
 
-    public function connect(Interfaces\Element $element) : Interfaces\Connection {
-        $this->connections[] = new ComplexConnection($this, $element);
-    }
+    protected $connectionClass = ComplexConnection::class;
 }

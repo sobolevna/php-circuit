@@ -2,6 +2,8 @@
 
 namespace Circuit\Traits; 
 
+use Circuit\Interfaces\{Element, Connection};
+
 trait IsStructured {
     /**
      * @propery Element[] $elements

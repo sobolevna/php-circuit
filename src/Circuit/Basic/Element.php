@@ -11,5 +11,5 @@ class Element extends Entity implements Interfaces\Element {
 
     protected $description = 'A basic element of any structure. No other properties';
 
-    
+    protected $connectionClass = Connection::class;
 }

@@ -12,7 +12,5 @@ class StructuredElement extends StructuredEntity implements Interfaces\Element{
 
     protected $description = 'Entity that is a structure. Core is a Node, limitation is EntryPoint, particularity is EmtpyField';
 
-    public function connect(Interfaces\Element $element) : Interfaces\Connection {
-        $this->connections[] = new StructuredConnection($this, $element);
-    }
+    protected $connectionClass = StructuredConnection::class;
 }

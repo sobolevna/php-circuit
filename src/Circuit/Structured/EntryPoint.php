@@ -13,13 +13,13 @@ class EntryPoint extends Element implements Interfaces\Limitation, Interfaces\El
      */
     protected $description = 'Limitation representing element';
 
-    public function connect(Element $element) {
+    public function connect(Element $element) : Interfaces\Connection {
         if (
             !($element instanceof Interfaces\Element\EntryPoint) || 
             !($element instanceof Interfaces\Element\Node)
         ) {
             throw new ElementConnectionException('EntryPoints can be connected to either EntryPoint or Node');
         }
-        parent::connect($element);
+        return parent::connect($element);
     }
 }
