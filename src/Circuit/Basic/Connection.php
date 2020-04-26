@@ -2,7 +2,7 @@
 
 namespace Circuit\Basic; 
 
-use Circuit\Interfaces\Element;
+use Circuit\Interfaces;
 use Circuit\Traits\{HasDescription, IsConnection};
 
 class Connection implements Interfaces\Connection, Interfaces\Descriptable {
@@ -10,7 +10,7 @@ class Connection implements Interfaces\Connection, Interfaces\Descriptable {
     use HasDescription, IsConnection;
 
     /**
-     * @property  string 
+     * @var  string 
      */
     protected $description = 'Basic connection';
     

@@ -6,12 +6,10 @@ use Circuit\Interfaces;
 
 class Limitation implements Interfaces\Limitation, Interfaces\Descriptable {
 
+    use \Circuit\Traits\HasDescription;
     /**
-     * @property  string 
+     * @var  string 
      */
     protected $description = 'Everithing that is not it';
-
-    public function getDescription() : string {
-        return $this->description;
-    }
+    
 }

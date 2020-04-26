@@ -6,12 +6,10 @@ use Circuit\Interfaces;
 
 class Particularity implements Interfaces\Particularity {
 
+    use \Circuit\Traits\HasDescription;
     /**
-     * @property  string 
+     * @var  string 
      */
     protected $description = 'What differs it from others';
-
-    public function getDescription() : string {
-        return $this->description;
-    }
+    
 }

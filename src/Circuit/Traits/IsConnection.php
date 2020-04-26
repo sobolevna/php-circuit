@@ -29,7 +29,7 @@ trait IsConnection {
         foreach ($elementsToConnect as $elementToConnect) {
             $this->doConnect($currentElement, $elementToConnect);
         }
-        $this->addConnectionToElements($entryPointsToConnect);
+        $this->addConnectionToElements($elementsToConnect);
     }
 
     /**
@@ -37,11 +37,11 @@ trait IsConnection {
      * @param Element $elementToConnect
      */
     protected function doConnect(Element $currentElement, Element $elementToConnect) {
-        if (!\in_array($currentElement, $elementToConnect->getConnections())) {
-            $currentElement->addConnection($elementToConnect);
+        if (!\in_array($this, $elementToConnect->getConnections())) {
+            $currentElement->addConnection($this);
         }        
-        if (!\in_array($elementToConnect, $currentElement->getConnections())) {
-            $elementToConnect->addConnection($currentElement);
+        if (!\in_array($this, $currentElement->getConnections())) {
+            $elementToConnect->addConnection($this);
         }
     }
 }

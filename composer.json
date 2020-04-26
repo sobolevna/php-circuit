@@ -16,6 +16,11 @@
     "require-dev": {
         "phpunit/phpunit": "^9.1"
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Circuit\\Tests\\": "tests/"
+        }
+    },
     "scripts": {
         "test": "phpunit"
     }

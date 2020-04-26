@@ -7,10 +7,6 @@ use Circuit\Interfaces\{Element, Connection};
 trait IsElement {
 
     /**
-     * @var string $connectionClass
-     */
-    protected $connectionClass = Connection::class;
-    /**
      * @var Connection[]
      */
     protected $connections = [];
@@ -27,8 +23,8 @@ trait IsElement {
      * @return Connection
      */
     public function connect(Element $element) : Connection {
-        $connection = new $connectionClass([$this, $element]);
-        return $this->addConnection ($connection);
+        $connection = new $this->connectionClass([$this, $element]);
+        return $this->addConnection($connection);
     }
 
     public function addConnection (Connection $connection) : Connection {
