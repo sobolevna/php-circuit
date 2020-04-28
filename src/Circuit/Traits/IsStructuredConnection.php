@@ -3,6 +3,7 @@
 namespace Circuit\Traits; 
 
 use Circuit\Interfaces\{Element, Connection};
+use Circuit\Exceptions\EntryPointConnectionException;
 
 trait IsStructuredConnection {
     
@@ -13,6 +14,7 @@ trait IsStructuredConnection {
         }
         $this->makeConnections($entryPoints);
         if (empty($this->structureConnections)) {
+            var_dump($entryPoints);
             throw new EntryPointConnectionException('No EntryPoints could be connected');
         }
     }
@@ -36,11 +38,11 @@ trait IsStructuredConnection {
     protected function checkTypes($currentEntryPoint, $entryPointToConnect) {
         $firstClass = get_class($currentEntryPoint);
         $secondClass = get_class($entryPointToConnect);
-        return ($currentEntryPoint instanceof $secondClass) || (entryPointToConnect instanceof firstClass);
+        return ($currentEntryPoint instanceof $secondClass) || ($entryPointToConnect instanceof firstClass);
     }
 
-    protected function addStructureElement(Interfaces\Element $element) {
-        if (!in_array($element, $this->structureElements)) {
+    protected function addStructureElement(Element $element) {
+        if (!in_array($element, $this->structureElements, true)) {
             $this->structureElements[] = $element;
         }
     }

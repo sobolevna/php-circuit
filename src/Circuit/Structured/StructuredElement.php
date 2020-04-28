@@ -1,6 +1,6 @@
 <?php
 
-namespace Circuit\Basic;
+namespace Circuit\Structured;
 
 use Circuit\Interfaces;
 use Circuit\Interfaces\Element;

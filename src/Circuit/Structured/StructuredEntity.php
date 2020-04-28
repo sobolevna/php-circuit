@@ -1,6 +1,6 @@
 <?php
 
-namespace Circuit\Basic;
+namespace Circuit\Structured;
 
 use Circuit\Interfaces;
 use Circuit\Interfaces\Element;
@@ -13,7 +13,7 @@ class StructuredEntity extends Entity implements Interfaces\Structure, Interface
 
     protected $description = 'Entity that is a structure. Core is a Node, limitation is EntryPoint, particularity is EmtpyField';
 
-    public function __construct(Element\Node $core, Interfaces\EntryPoint $limitation, Interfaces\EmptyField $particularity) {
+    public function __construct(Element\Node $core, Element\EntryPoint $limitation, Element\EmptyField $particularity) {
         parent::__construct($core, $limitation, $particularity);
         $this->structureElements = [$core, $limitation, $particularity];
         $this->structureConnections[] = $core->connect($limitation);

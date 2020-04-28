@@ -3,6 +3,7 @@
 namespace Circuit\Traits; 
 
 use Circuit\Interfaces\{Element, Connection};
+use Circuit\Exceptions\ElementConnectionException;
 
 trait IsElement {
 
@@ -31,10 +32,10 @@ trait IsElement {
         if (!($connection instanceof $this->connectionClass)) {
             throw new ElementConnectionException("You are trying to use invalid connection type for this element");
         }
-        if (!in_array($this, $connection->getElements())) {
+        if (!in_array($this, $connection->getElements(), true)) {
             throw new ElementConnectionException("This connection does not contains this element");
         }
-        if (!in_array($connection, $this->connections)) {
+        if (!in_array($connection, $this->connections, true)) {
             $this->connections[] = $connection;
         }
         return $connection;

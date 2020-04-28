@@ -3,6 +3,7 @@
 namespace Circuit\Tests\Basic; 
 
 use Circuit\Basic;
+use Circuit\Interfaces;
 
 class StructureTest extends \PHPUnit\Framework\TestCase {
 
@@ -33,7 +34,7 @@ class StructureTest extends \PHPUnit\Framework\TestCase {
      * @covers Basic\Connection::getElements
      */
     public function testCreateConnection() {
-        $this->assertTrue($this->connection instanceof Basic\Connection);
+        $this->assertTrue($this->connection instanceof Interfaces\Connection);
         $this->assertTrue(count($this->element->getConnections()) == 1);
         $this->assertTrue(in_array($this->connection, $this->element->getConnections()));
         $this->assertTrue(count($this->elementToConnect->getConnections()) == 1);
@@ -69,11 +70,11 @@ class StructureTest extends \PHPUnit\Framework\TestCase {
 
     public function testCreateCycledStructureFromBuilder() {
         $builder = new Basic\StructureBuilder();
-        $newElement = new Basic\Element($this->core, $this->limitation, $this->particularity);
+        $newElement = $this->createElement();
         $newElement->connect($this->element);
         $newElement->connect($this->elementToConnect);
         $newElement->setDescription('Third element');
-        $additionalElement = new Basic\Element($this->core, $this->limitation, $this->particularity);
+        $additionalElement = $this->createElement();
         $additionalElement->setDescription('Additional element out of cycle');
         $additionalElement->connect($newElement);
         $structure = $builder->setFirstElement($this->element)->build();
@@ -90,5 +91,9 @@ class StructureTest extends \PHPUnit\Framework\TestCase {
         $description = 'New description';
         $structure->setDescription($description);
         $this->assertEquals($structure->getDescription(), $description);
+    }
+
+    protected function createElement() {
+        return new Basic\Element($this->createMock(\Circuit\Basic\Core::class), $this->createMock(\Circuit\Basic\Limitation::class), $this->createMock(\Circuit\Basic\Particularity::class));
     }
 }

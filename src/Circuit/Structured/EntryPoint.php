@@ -1,6 +1,6 @@
 <?php
 
-namespace Circuit\Basic; 
+namespace Circuit\Structured; 
 
 use Circuit\Interfaces;
 use Circuit\Basic\Element;
@@ -13,9 +13,9 @@ class EntryPoint extends Element implements Interfaces\Limitation, Interfaces\El
      */
     protected $description = 'Limitation representing element';
 
-    public function connect(Element $element) : Interfaces\Connection {
+    public function connect(Interfaces\Element $element) : Interfaces\Connection {
         if (
-            !($element instanceof Interfaces\Element\EntryPoint) || 
+            !($element instanceof Interfaces\Element\EntryPoint) && 
             !($element instanceof Interfaces\Element\Node)
         ) {
             throw new ElementConnectionException('EntryPoints can be connected to either EntryPoint or Node');
