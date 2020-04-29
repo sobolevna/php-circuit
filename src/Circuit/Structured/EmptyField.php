@@ -4,19 +4,15 @@ namespace Circuit\Structured;
 
 use Circuit\Interfaces;
 use Circuit\Basic\Element;
-use Circuit\Exceptions\ElementConnectionException;
+use Circuit\Traits;
 
 class EmptyField extends Element implements Interfaces\Particularity, Interfaces\Element\EmptyField {
+    use Traits\IsEmptyField;
 
     /**
      * @property  string 
      */
     protected $description = 'Core representing element';
 
-    public function connect(Interfaces\Element $element) : Interfaces\Connection {
-        if (!$element instanceof Node) {
-            throw new ElementConnectionException('EmptyFields can be connected only to Nodes');
-        }
-        return parent::connect($element);
-    }
+   
 }
