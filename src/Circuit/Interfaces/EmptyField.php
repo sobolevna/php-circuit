@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Circuit\Interfaces\Element;
+namespace Circuit\Interfaces;
 use Circuit\Interfaces\{Element, Connection};
 
 /**

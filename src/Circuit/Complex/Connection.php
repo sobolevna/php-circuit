@@ -4,10 +4,10 @@ namespace Circuit\Complex;
 
 use Circuit\Interfaces;
 use Circuit\Traits\IsStructured;
-use Circuit\Structured\StructuredConnection;
+use Circuit\Structured;
 use Circuit\Exceptions\EntryPointConnectionException;
 
-class ComplexConnection extends StructuredConnection {
+class Connection extends Structured\Connection {
 
     /**
      * @var string 

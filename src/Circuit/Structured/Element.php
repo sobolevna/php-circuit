@@ -3,14 +3,13 @@
 namespace Circuit\Structured;
 
 use Circuit\Interfaces;
-use Circuit\Interfaces\Element;
 use Circuit\Traits\IsElement;
 
-class StructuredElement extends StructuredEntity implements Interfaces\Element{
+class Element extends Entity implements Interfaces\Element{
 
     use IsElement;
 
     protected $description = 'Entity that is a structure. Core is a Node, limitation is EntryPoint, particularity is EmtpyField';
 
-    protected $connectionClass = StructuredConnection::class;
+    protected $connectionClass = Connection::class;
 }

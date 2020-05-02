@@ -7,7 +7,7 @@ use Circuit\Interfaces;
 class StructureBuilder {
 
     /**
-     * @var Interfaces\Element[] $elements
+     * @var Interfaces[] $elements
      */
     protected $elements = [];
 
@@ -17,7 +17,7 @@ class StructureBuilder {
     protected $connections = [];
 
     /**
-     * @var Interfaces\Element $firstElement
+     * @var Interfaces $firstElement
      */
     protected $firstElement;
 

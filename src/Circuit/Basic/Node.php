@@ -1,11 +1,18 @@
-<?php 
+<?php
 
-namespace Circuit\Traits; 
+namespace Circuit\Basic; 
 
 use Circuit\Interfaces;
+use Circuit\Basic\Element;
 use Circuit\Exceptions\ElementConnectionException;
 
-trait IsNode {
+class Node extends Element implements Interfaces\Core, Interfaces\Node {
+
+    /**
+     * @var  string 
+     */
+    protected $description = 'Core representing element';
+
     /**
      * @param Element $element
      * @throws ElementConnectionException
@@ -20,5 +27,4 @@ trait IsNode {
         }
         return parent::connect($element);
     }
-
 }

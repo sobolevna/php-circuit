@@ -9,7 +9,7 @@ class EmptyFieldArray extends \ArrayObject implements Interfaces\Particularity {
 
     public function __construct(array $input) {
         foreach ($input as $item) {
-            if (!(\is_object($item) && $item instanceof Interfaces\Element\EmptyField)) {
+            if (!(\is_object($item) && $item instanceof Interfaces\EmptyField)) {
                 throw new ElementArrayException();
             }
         }

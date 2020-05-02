@@ -3,12 +3,11 @@
 namespace Circuit\Complex;
 
 use Circuit\Interfaces;
-use Circuit\Interfaces\Element;
 use Circuit\Traits\IsStructured;
-use Circuit\Structured\StructuredEntity;
+use Circuit\Structured;
 use Circuit\Exceptions\ElementTypeException;
 
-class ComplexEntity extends StructuredEntity {
+class Entity extends Structured\Entity {
 
     use IsStructured;
 
@@ -26,13 +25,13 @@ class ComplexEntity extends StructuredEntity {
     protected function categorizeElements() {
         $nodes = $entryPoints = $emptyFields = [];
         foreach ($this->structureElements as $element) {
-            if ($element instanceof Element\Node) {
+            if ($element instanceof Interfaces\Node) {
                 $nodes[] = $element;
             }
-            elseif ($element instanceof Element\EntryPoint) {
+            elseif ($element instanceof Interfaces\EntryPoint) {
                 $entryPoints[] = $element;
             }
-            elseif ($element instanceof Element\EmptyField) {
+            elseif ($element instanceof Interfaces\EmptyField) {
                 $emptyFields[] = $element;
             }
             else {

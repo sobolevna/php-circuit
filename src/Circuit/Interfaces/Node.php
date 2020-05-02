@@ -17,14 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Circuit\Interfaces\Element;
-use Circuit\Interfaces\Element;
-use Circuit\Interfaces\Connection;
+namespace Circuit\Interfaces;
+
+use Circuit\Interfaces\{Element, Connection};
 
 /**
  *
  * @author sobolevna
  */
-interface EntryPoint extends Element{
+interface Node extends Element {
+    
     
 }

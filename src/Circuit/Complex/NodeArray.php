@@ -9,7 +9,7 @@ class NodeArray extends \ArrayObject implements Interfaces\Core {
 
     public function __construct(array $input) {
         foreach ($input as $item) {
-            if (!(\is_object($item) && $item instanceof Interfaces\Element\Node)) {
+            if (!(\is_object($item) && $item instanceof Interfaces\Node)) {
                 throw new ElementArrayException();
             }
         }

@@ -5,7 +5,7 @@ namespace Circuit\Complex;
 use Circuit\Interfaces;
 use Circuit\Traits;
 
-class ComplexEmptyField extends ComplexElement implements Interfaces\Particularity, Interfaces\Element\EmptyField {
+class EmptyField extends Element implements Interfaces\Particularity, Interfaces\EmptyField {
 
     use Traits\IsEmptyField;
 

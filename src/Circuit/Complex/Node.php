@@ -5,7 +5,7 @@ namespace Circuit\Complex;
 use Circuit\Interfaces;
 use Circuit\Traits;
 
-class ComplexNode extends ComplexElement implements Interfaces\Core, Interfaces\Element\Node {
+class Node extends Element implements Interfaces\Core, Interfaces\Node {
 
     use Traits\IsNode;
 

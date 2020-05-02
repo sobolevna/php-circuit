@@ -5,7 +5,7 @@ namespace Circuit\Complex;
 use Circuit\Interfaces;
 use Circuit\Traits;
 
-class ComplexEntryPoint extends ComplexElement implements Interfaces\Limitation, Interfaces\Element\EntryPoint {
+class EntryPoint extends Element implements Interfaces\Limitation, Interfaces\EntryPoint {
 
     use Traits\IsEntryPoint;
 

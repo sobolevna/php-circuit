@@ -4,10 +4,10 @@ namespace Circuit\Advanced;
 
 use Circuit\Basic\Entity;
 use Circuit\Interfaces\Connection;
-use Circuit\Interfaces\Element\{Node, EntryPoint, EmptyField};
+use Circuit\Interfaces\{Node, EntryPoint, EmptyField};
 use Circuit\Traits\{IsConnection, IsStructured, IsStructuredConnection};
 
-class StructuredConnectionEntity extends StructuredElement implements Interfaces\Connection {
+class StructuredConnectionEntity extends Element implements Interfaces\Connection {
     
     use IsConnection;
 

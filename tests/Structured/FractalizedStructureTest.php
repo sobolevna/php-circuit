@@ -2,16 +2,16 @@
 
 namespace Circuit\Tests\Structured; 
 
-use Circuit\Structured;
+use Circuit\{Basic, Structured};
 use Circuit\Basic\{Structure, StructureBuilder};
 
 class FractalizedStructureTest extends StructureTest {
 
     public function setUp() : void {
-        $this->node = $this->createElement(Structured\StructuredNode::class);
-        $this->entryPoint = $this->createElement(Structured\StructuredEntryPoint::class);
-        $this->emptyField = $this->createElement(Structured\StructuredEmptyField::class);
-        $this->element = new Structured\StructuredElement($this->node, $this->entryPoint, $this->emptyField);
+        $this->node = $this->createElement(Structured\Node::class);
+        $this->entryPoint = $this->createElement(Structured\EntryPoint::class);
+        $this->emptyField = $this->createElement(Structured\EmptyField::class);
+        $this->element = new Structured\Element($this->node, $this->entryPoint, $this->emptyField);
         $this->element->setDescription('First element');
         $this->elementToConnect = $this->createFractalizedElement();
         $this->elementToConnect->setDescription('Second element');
@@ -36,20 +36,20 @@ class FractalizedStructureTest extends StructureTest {
         $this->assertTrue(\in_array($this->connection, $structure->getStructureConnections()));
     }
     
-    protected function createElement($class = Structured\StructuredElement::class) {
+    protected function createElement($class = StructuredElement::class) {
         $core = $this->createMock(\Circuit\Basic\Core::class);
         $limitation = $this->createMock(\Circuit\Basic\Limitation::class);
         $particularity = $this->createMock(\Circuit\Basic\Particularity::class);
-        $node = new Structured\Node($core, $limitation, $particularity);
-        $entryPoint = new Structured\EntryPoint($core, $limitation, $particularity);
-        $emptyField = new Structured\EmptyField($core, $limitation, $particularity);
+        $node = new Basic\Node($core, $limitation, $particularity);
+        $entryPoint = new Basic\EntryPoint($core, $limitation, $particularity);
+        $emptyField = new Basic\EmptyField($core, $limitation, $particularity);
         return new $class($node, $entryPoint, $emptyField);
     }
     
-    protected function createFractalizedElement($class = Structured\StructuredElement::class) {
-        $node = $this->createElement(Structured\StructuredNode::class);
-        $entryPoint = $this->createElement(Structured\StructuredEntryPoint::class);
-        $emptyField = $this->createElement(Structured\StructuredEmptyField::class);
+    protected function createFractalizedElement($class = Structured\Element::class) {
+        $node = $this->createElement(Structured\Node::class);
+        $entryPoint = $this->createElement(Structured\EntryPoint::class);
+        $emptyField = $this->createElement(Structured\EmptyField::class);
         return new $class($node, $entryPoint, $emptyField);
     }
 }

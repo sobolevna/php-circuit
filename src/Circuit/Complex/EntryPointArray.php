@@ -9,7 +9,7 @@ class EntryPointArray extends \ArrayObject implements Interfaces\Limitation {
 
     public function __construct(array $input) {
         foreach ($input as $item) {
-            if (!(\is_object($item) && $item instanceof Interfaces\Element\EntryPoint)) {
+            if (!(\is_object($item) && $item instanceof Interfaces\EntryPoint)) {
                 throw new ElementArrayException();
             }
         }

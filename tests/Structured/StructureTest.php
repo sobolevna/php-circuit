@@ -2,7 +2,7 @@
 
 namespace Circuit\Tests\Structured; 
 
-use Circuit\Structured;
+use Circuit\{Basic, Structured};
 use Circuit\Basic\{Structure, StructureBuilder};
 
 class StructureTest extends \Circuit\Tests\Basic\StructureTest {
@@ -11,10 +11,10 @@ class StructureTest extends \Circuit\Tests\Basic\StructureTest {
         $core = $this->createMock(\Circuit\Basic\Core::class);
         $limitation = $this->createMock(\Circuit\Basic\Limitation::class);
         $particularity = $this->createMock(\Circuit\Basic\Particularity::class);
-        $this->node = new Structured\Node($core, $limitation, $particularity);
-        $this->entryPoint = new Structured\EntryPoint($core, $limitation, $particularity);
-        $this->emptyField = new Structured\EmptyField($core, $limitation, $particularity);
-        $this->element = new Structured\StructuredElement($this->node, $this->entryPoint, $this->emptyField);
+        $this->node = new Basic\Node($core, $limitation, $particularity);
+        $this->entryPoint = new Basic\EntryPoint($core, $limitation, $particularity);
+        $this->emptyField = new Basic\EmptyField($core, $limitation, $particularity);
+        $this->element = new Structured\Element($this->node, $this->entryPoint, $this->emptyField);
         $this->element->setDescription('First element');
         $this->elementToConnect = $this->createElement();
         $this->elementToConnect->setDescription('Second element');
@@ -25,8 +25,8 @@ class StructureTest extends \Circuit\Tests\Basic\StructureTest {
      * @covers Structured\Element::__construct
      */
     public function testCreateElement() {
-        $this->assertTrue($this->element instanceof Structured\StructuredEntity);
-        $this->assertTrue($this->element instanceof Structured\StructuredElement);
+        $this->assertTrue($this->element instanceof Structured\Entity);
+        $this->assertTrue($this->element instanceof Structured\Element);
         $this->assertTrue(count($this->element->getStructureElements()) == 3);
         $this->assertTrue(\in_array($this->node, $this->element->getStructureElements(), true));
         $this->assertTrue(\in_array($this->entryPoint, $this->element->getStructureElements(), true));
@@ -51,10 +51,10 @@ class StructureTest extends \Circuit\Tests\Basic\StructureTest {
         $core = $this->createMock(\Circuit\Basic\Core::class);
         $limitation = $this->createMock(\Circuit\Basic\Limitation::class);
         $particularity = $this->createMock(\Circuit\Basic\Particularity::class);
-        $node = new Structured\Node($core, $limitation, $particularity);
-        $entryPoint = new Structured\EntryPoint($core, $limitation, $particularity);
-        $emptyField = new Structured\EmptyField($core, $limitation, $particularity);
-        return new Structured\StructuredElement($node, $entryPoint, $emptyField);
+        $node = new Basic\Node($core, $limitation, $particularity);
+        $entryPoint = new Basic\EntryPoint($core, $limitation, $particularity);
+        $emptyField = new Basic\EmptyField($core, $limitation, $particularity);
+        return new Structured\Element($node, $entryPoint, $emptyField);
     }
 
     
