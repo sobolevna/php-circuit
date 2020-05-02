@@ -9,7 +9,7 @@ use Circuit\Exceptions\ElementConnectionException;
 class Node extends Element implements Interfaces\Core, Interfaces\Element\Node {
 
     /**
-     * @property  string 
+     * @var  string 
      */
     protected $description = 'Core representing element';
 

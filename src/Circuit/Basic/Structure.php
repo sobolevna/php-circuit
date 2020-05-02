@@ -10,7 +10,7 @@ class Structure implements Interfaces\Structure, Interfaces\Descriptable {
     use HasDescription, IsStructured;
 
     /**
-     * @property  string 
+     * @var  string 
      */
     protected $description = 'Basic structure. Just elements and connections';    
 

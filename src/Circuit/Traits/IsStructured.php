@@ -10,7 +10,7 @@ trait IsStructured {
      */
     protected $structureElements = [];
     /**
-     * @property Connection[]
+     * @var Connection[]
      */
     protected $structureConnections = []; 
 

@@ -10,7 +10,7 @@ class StructuredEntryPoint extends StructuredElement implements Interfaces\Limit
     use Traits\IsEntryPoint;
 
     /**
-     * @property  string 
+     * @var  string 
      */
     protected $description = 'Limitation representing structured element';
     

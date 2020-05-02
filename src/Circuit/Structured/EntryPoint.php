@@ -11,7 +11,7 @@ class EntryPoint extends Element implements Interfaces\Limitation, Interfaces\El
     use Traits\IsEntryPoint;
 
     /**
-     * @property  string 
+     * @var  string 
      */
     protected $description = 'Limitation representing element';
 

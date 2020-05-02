@@ -10,7 +10,7 @@ class StructuredNode extends StructuredElement implements Interfaces\Core, Inter
     use Traits\IsNode;
 
     /**
-     * @property  string 
+     * @var  string 
      */
     protected $description = 'Core representing structured element';
 

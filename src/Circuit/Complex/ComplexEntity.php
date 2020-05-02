@@ -1,12 +1,12 @@
 <?php
 
-namespace Circuit\Basic;
+namespace Circuit\Complex;
 
 use Circuit\Interfaces;
 use Circuit\Interfaces\Element;
 use Circuit\Traits\IsStructured;
 use Circuit\Structured\StructuredEntity;
-use Circcuit\Exceptions\ElementTypeException;
+use Circuit\Exceptions\ElementTypeException;
 
 class ComplexEntity extends StructuredEntity {
 
@@ -18,7 +18,9 @@ class ComplexEntity extends StructuredEntity {
         $this->structureElements = $structure->getStructureElements();
         $this->structureConnections = $structure->getStructureConnections();
         $categorized = $this->categorizeElements();
-        parent::__construct(new NodeArray($categorized['nodes']), new EntryPointArray($categorized['entryPoints']), new EmptyFieldArray($categorized['emptyFields']));
+        $this->core = new NodeArray($categorized['nodes']);
+        $this->limitation = new EntryPointArray($categorized['entryPoints']);
+        $this->particularity = new EmptyFieldArray($categorized['emptyFields']);
     }
 
     protected function categorizeElements() {

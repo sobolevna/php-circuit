@@ -1,6 +1,6 @@
 <?php
 
-namespace Circuit\Basic; 
+namespace Circuit\Complex; 
 
 use Circuit\Interfaces;
 use Circuit\Traits\IsStructured;
@@ -14,6 +14,18 @@ class ComplexConnection extends StructuredConnection {
      */
     protected $description = 'Connection for complex elements';
 
+    protected function processElements(array $elements) {
+        $entryPoints = [];
+        foreach ($elements as $element) {
+            $entryPoints[] = $element->getLimitation();
+        }
+        $this->makeConnections($entryPoints);
+        if (empty($this->structureConnections)) {
+            var_dump($entryPoints);
+            throw new EntryPointConnectionException('No EntryPoints could be connected');
+        }
+    }
+
     protected function makeConnections(array $entryPointArrays) {
         $entryPointArraysToConnect = $entryPointArrays;
         $currentEntryPointArray = array_pop($entryPointArraysToConnect);
@@ -26,7 +38,7 @@ class ComplexConnection extends StructuredConnection {
             }
                      
         }
-        $this->makeConnection($entryPointArraysToConnect);
+        $this->makeConnections($entryPointArraysToConnect);
     }
 
     protected function connectElementToArray($currentEntryPoint, $entryPointArray) {

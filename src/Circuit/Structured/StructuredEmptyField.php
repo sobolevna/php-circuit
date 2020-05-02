@@ -10,7 +10,7 @@ class StructuredEmptyField extends StructuredElement implements Interfaces\Parti
     use Traits\IsEmptyField;
 
     /**
-     * @property  string 
+     * @var  string 
      */
     protected $description = 'Particularity representing structured element';
 

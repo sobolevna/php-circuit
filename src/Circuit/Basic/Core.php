@@ -10,7 +10,7 @@ class Core implements Interfaces\Core, Interfaces\Descriptable {
     use HasDescription;
 
     /**
-     * @property  string 
+     * @var  string 
      */
     protected $description = 'What exactly the entity is';
 

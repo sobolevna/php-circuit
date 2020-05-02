@@ -44,7 +44,7 @@ class StructureBuilder {
     }
 
     protected function walkThroughElements($element) {
-        if (in_array($element, $this->elements)) {
+        if (in_array($element, $this->elements, true)) {
             return;
         }
         $this->elements[] = $element;
@@ -57,7 +57,7 @@ class StructureBuilder {
             $connectedElements = $this->arrayMerge($connectedElements, $otherElements);
         }
         $elementsToAdd = array_udiff($connectedElements, $this->elements, function($connectedElement, $existingElement){
-            return $connectedElement == $existingElement ? 0 : -1;
+            return $connectedElement === $existingElement ? 0 : -1;
         });
         if (empty($elementsToAdd)) {
             return;
@@ -70,7 +70,7 @@ class StructureBuilder {
     protected function getOtherElements($element, $elementArray) {
         $result = [];
         foreach ($elementArray as $item) {
-            if ($element != $item) {
+            if ($element !== $item) {
                 $result[] = $item;
             }
         }
@@ -80,7 +80,7 @@ class StructureBuilder {
     protected function arrayMerge($array1, $array2) {
         $result = $array1;
         foreach($array2 as $item) {
-            if (!in_array($item, $result)) {
+            if (!in_array($item, $result, true)) {
                 $result[] = $item;
             }
         }

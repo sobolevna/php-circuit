@@ -10,19 +10,19 @@ class Entity implements Interfaces\Entity, Interfaces\Descriptable {
     use HasDescription;
 
     /**
-     * @property  Interfaces\Core
+     * @var  Interfaces\Core
      */
     protected $core;
     /**
-     * @property  Interfaces\Limitation
+     * @var  Interfaces\Limitation
      */
     protected $limitation;
     /**
-     * @property  Interfaces\Particularity
+     * @var  Interfaces\Particularity
      */
     protected $particularity;
     /**
-     * @property  string 
+     * @var  string 
      */
     protected $description = 'Anything that is';
 

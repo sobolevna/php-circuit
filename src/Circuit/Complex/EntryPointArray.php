@@ -1,6 +1,6 @@
 <?php
 
-namespace Circuit\Basic; 
+namespace Circuit\Complex; 
 
 use Circuit\Interfaces;
 use Circuit\Exceptions\ElementArrayException;
@@ -13,6 +13,6 @@ class EntryPointArray extends \ArrayObject implements Interfaces\Limitation {
                 throw new ElementArrayException();
             }
         }
-        parent::construct($input);
+        parent::__construct($input);
     }
 }

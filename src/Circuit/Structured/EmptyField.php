@@ -10,7 +10,7 @@ class EmptyField extends Element implements Interfaces\Particularity, Interfaces
     use Traits\IsEmptyField;
 
     /**
-     * @property  string 
+     * @var  string 
      */
     protected $description = 'Core representing element';
 
