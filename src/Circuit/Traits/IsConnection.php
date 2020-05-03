@@ -38,10 +38,10 @@ trait IsConnection {
      */
     protected function doConnect(Element $currentElement, Element $elementToConnect) {
         if (!\in_array($this, $elementToConnect->getConnections(), true)) {
-            $currentElement->addConnection($this);
+            $elementToConnect->addConnection($this);
         }        
         if (!\in_array($this, $currentElement->getConnections(), true)) {
-            $elementToConnect->addConnection($this);
+            $currentElement->addConnection($this);
         }
     }
 }

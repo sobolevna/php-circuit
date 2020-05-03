@@ -1,29 +1,22 @@
 <?php
 
-namespace Circuit\Structured; 
+namespace Circuit\Structured;
 
-use Circuit\Interfaces;
-use Circuit\Traits\{IsStructured, IsStructuredConnection};
-use Circuit\Basic;
-use Circuit\Exceptions\EntryPointConnectionException;
+use Circuit\{Interfaces, Traits};
 
-class Connection extends Basic\Connection implements Interfaces\Structure {
+class Mediator extends Element implements Interfaces\Connection {
 
-    use IsStructured;
+    use Traits\IsConnection;
 
-    /**
-     * @var string 
-     */
-    protected $description = 'Connection for structured elements';
-
-    /**
-     * @param Element[] $elements
-     */
-    public function __construct(array $elements) {
-        parent::__construct($elements);
-        $this->processElements($elements);
+    public function __construct(Interfaces\Node $core, Interfaces\EntryPoint $limitation, Interfaces\EmptyField $particularity, array $elements = []) {
+        parent::__construct($core, $limitation, $particularity);
+        if (!empty($elements)) {
+            $this->elements = $elements;
+            $this->addConnectionToElements($elements);
+            $this->processElements($elements);
+        }
     }
-    
+
     protected function processElements(array $elements) {
         $entryPoints = [];
         foreach ($elements as $element) {
@@ -38,18 +31,13 @@ class Connection extends Basic\Connection implements Interfaces\Structure {
 
     protected function makeConnections(array $entryPoints) {
         $entryPointsToConnect = $entryPoints;
-        $currentEntryPoint = array_pop($entryPointsToConnect);
-        if (empty($entryPointsToConnect)) {
-            return;
-        }
+        $currentEntryPoint = $this->getLimitation();
         foreach ($entryPointsToConnect as $entryPoint) {
             if ($this->checkTypes($currentEntryPoint, $entryPoint)) {
                 $this->structureConnections[]=$currentEntryPoint->connect($entryPoint);
-                $this->addStructureElement($currentEntryPoint);
                 $this->addStructureElement($entryPoint);
             }            
         }
-        $this->makeConnections($entryPointsToConnect);
     }
     
     protected function checkTypes($currentEntryPoint, $entryPointToConnect) {

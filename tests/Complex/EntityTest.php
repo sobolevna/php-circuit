@@ -6,7 +6,7 @@ use Circuit\Basic\StructureBuilder;
 use Circuit\Complex;
 use Circuit\Structured;
 use Circuit\Interfaces;
-use Circuit\Tests\Factory;
+use Circuit\Factory;
 
 /**
  * @coversDefaultClass ComplexEntity
@@ -32,11 +32,11 @@ class EntityTest extends \PHPUnit\Framework\TestCase {
     }
 
     public function providerConstruct() {
-        $builder = new Factory();
+        $factory = new Factory();
         return [
-            'structuredEntity' => [$builder->createSimpleStructure(), 3, 2],
-            'cycledStructure' => [$builder->createCycledStructure(), 5, 6],
-            'fractalizedStructure' => [$builder->createFractalizedStructure(), 5, 6]
+            'structuredEntity' => [$factory->createSimpleStructure(), 3, 2],
+            'cycledStructure' => [$factory->createCycledStructure(), 5, 6],
+            'fractalizedStructure' => [$factory->createFractalizedStructure(), 5, 6]
         ];
     }
 

@@ -30,7 +30,7 @@ trait IsElement {
 
     public function addConnection (Connection $connection) : Connection {
         if (!($connection instanceof $this->connectionClass)) {
-            throw new ElementConnectionException("You are trying to use invalid connection type for this element");
+            //throw new ElementConnectionException("You are trying to use invalid connection type for this element");
         }
         if (!in_array($this, $connection->getElements(), true)) {
             throw new ElementConnectionException("This connection does not contains this element");

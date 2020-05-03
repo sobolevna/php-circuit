@@ -6,7 +6,7 @@ use Circuit\Basic\StructureBuilder;
 use Circuit\Complex;
 use Circuit\Structured;
 use Circuit\Interfaces;
-use Circuit\Tests\Factory;
+use Circuit\Factory;
 
 class ElementTest extends EntityTest {
 

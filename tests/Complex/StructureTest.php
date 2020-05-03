@@ -7,7 +7,7 @@ use Circuit\{Interfaces, Basic, Structured, Complex};
 class StructureTest extends \PHPUnit\Framework\TestCase {
 
     public function setUp() : void {
-        $factory = new \Circuit\Tests\Factory();
+        $factory = new \Circuit\Factory();
         $builder = new Basic\StructureBuilder();
         $this->element = new Complex\Element($factory->createCycledStructure());
         $this->element->setDescription('First element');
