@@ -2,7 +2,7 @@
 
 namespace Circuit\Traits; 
 
-use Circuit\Interfaces\{State, Handler};
+use Circuit\Interfaces\{State, Handler, Process};
 
 trait IsProcess {
     /**
@@ -18,11 +18,11 @@ trait IsProcess {
         $this->finished = true;
     }
 
-    public function getState() {
+    public function getState() : State {
         return $this->state;
     }
 
-    public function process(Handler $handler) {
+    public function process(Handler $handler) : Process {
         $this->state = $handler->handle($this->state);
         return $this;
     }
