@@ -8,5 +8,5 @@ interface Process {
 
     public function getState() : State;
 
-    public function process(Handler $handler) : Process;
+    public function process(Handler $handler, array $params = []) : Process;
 }
